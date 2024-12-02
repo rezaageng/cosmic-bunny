@@ -14,8 +14,18 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
-            'role' => ['required', 'string', Rule::in(array_column(Role::cases(), 'value'))],
-            'password' => 'required|string',
+            'role' => [
+                'required',
+                'string',
+                Rule::in(array_column(Role::cases(),
+                'value'))],
+            'password' => [
+                'required',
+                'string',
+                'min:8', //min 8 char needed,
+                'regex:/[A-Z]/', //min 1 Capital
+                'regex:/[@$!%*?&#]/' //min 1 special char
+            ],
             'password_confirmation' => 'required|string|same:password',
 
         ]);
@@ -38,7 +48,13 @@ class AuthController extends Controller
     public function login(Request $request){
         $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string'
+            'password' => [
+                'required',
+                'string',
+                'min:8', //min 8 char needed,
+                'regex:/[A-Z]/', //min 1 Capital
+                'regex:/[@$!%*?&#]/' //min 1 special char
+            ]
         ]);
 
         if(!Auth::attempt($request->only('email', 'password'))){
