@@ -127,3 +127,19 @@ export const login = async (
 
   return responseParsed.data ?? { message: 'An error occurred' };
 };
+
+export const logout = async (): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  cookies().delete('token');
+  redirect('/login');
+};
