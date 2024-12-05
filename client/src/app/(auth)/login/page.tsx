@@ -1,7 +1,8 @@
-import LoginForm from '@/components/auth/login-form';
 import Image from 'next/image';
+import { type ReactElement } from 'react';
+import { LoginForm } from '@/components/auth/login-form';
 
-export default function Login() {
+export default function Login(): ReactElement {
   return (
     <section className="flex min-h-svh w-full flex-col md:flex-row-reverse">
       <div className="relative aspect-video w-full md:w-1/2 lg:w-[70%]">
@@ -19,7 +20,7 @@ export default function Login() {
         </h1>
         <LoginForm />
         <div>
-          Don't have an account?&nbsp;
+          Don&apos;t have an account?&nbsp;
           <a href="/register" className="text-indigo-500">
             Register
           </a>

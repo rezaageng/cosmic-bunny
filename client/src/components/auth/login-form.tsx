@@ -1,15 +1,16 @@
 'use client';
 
+import { type ReactElement } from 'react';
+import { useFormState } from 'react-dom';
 import { SubmitButton } from '@/components/auth/submit-button';
 import { ErrorMessage, InputGroup, Label, TextInput } from '@/components/form';
 import { login } from '@/lib/actions';
-import { LoginResponse } from '@/schemas/auth';
-import { ReactElement } from 'react';
-import { useFormState } from 'react-dom';
+import { type LoginResponse } from '@/schemas/auth';
+
 const initialState: LoginResponse = {
   message: '',
 };
-export default function LoginForm(): ReactElement {
+export function LoginForm(): ReactElement {
   const [state, formAction] = useFormState(login, initialState);
 
   return (

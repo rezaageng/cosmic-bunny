@@ -1,7 +1,7 @@
+import { type ReactElement, type ReactNode } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/button';
 import { cn } from '@/lib/utils';
-import { ReactElement, ReactNode } from 'react';
-import { useFormStatus } from 'react-dom';
 
 export function SubmitButton({
   className,
