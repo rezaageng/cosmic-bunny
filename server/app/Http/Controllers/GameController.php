@@ -7,23 +7,20 @@ use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
-    public function index(Request $request)
-  {
-    $game= Games::query();
+    public function index(Request $request){
+        $game= Games::query();
 
-    if($request->has('search')){
-        $game->where('name','like',"%" . $request->search . "%");
+        if($request->has('search')){
+            $game->where('name','like',"%" . $request->search . "%");
+        }
+        $game = $game->get();
+
+        return response()->json([
+            'messages'=>'list of games',
+            'data'=> $game
+        ]);
     }
-    $game = $game->get();
-
-    return response()->json([
-        'messages'=>'list of games',
-        'data'=> $game
-    ]);
-
-  }
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $request->validate([
             'name'=>'required|string',
             'description'=>'required|string',
@@ -39,17 +36,14 @@ class GameController extends Controller
         ]);
     }
 
+    public function show(Games $game){
+        return response()->json([
+            'messages'=>'game details',
+            'data'=> $game
+        ]);
+    }
 
-
-  public function show(Games $game){
-    return response()->json([
-        'messages'=>'game details',
-        'data'=> $game
-    ]);
-  }
-
-    public function update(Request $request, Games $game)
-    {
+    public function update(Request $request, Games $game){
         $request->validate([
             'name'=>'required|string',
             'description'=>'required|string',
@@ -65,13 +59,11 @@ class GameController extends Controller
         ]);
     }
 
-    public function destroy(Games $game)
-    {
+    public function destroy(Games $game){
+        $game->delete();
 
-    $game->delete();
-
-    return response()->json([
-        'message' => 'game delete succes',
-    ]);
-}
+        return response()->json([
+            'message' => 'game delete succes',
+        ]);
+    }
 }
