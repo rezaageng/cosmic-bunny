@@ -71,14 +71,14 @@ export function CheckBox({
   );
 }
 
-export const ErrorMessage = ({
+export function ErrorMessage({
   children,
   className,
 }: {
   children?: string;
   className?: string;
-}): ReactElement => {
+}): ReactElement {
   return (
     <span className={cn('text-sm text-rose-500', className)}>{children}</span>
   );
-};
+}

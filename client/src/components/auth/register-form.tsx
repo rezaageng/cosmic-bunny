@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
+import { useFormState } from 'react-dom';
 import {
   CheckBox,
   ErrorMessage,
@@ -10,7 +11,6 @@ import {
 } from '@/components/form';
 import { register } from '@/lib/actions';
 import type { RegisterResponse } from '@/schemas/auth';
-import { useFormState } from 'react-dom';
 import { SubmitButton } from '@/components/auth/submit-button';
 
 const initialState: RegisterResponse = {

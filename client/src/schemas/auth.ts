@@ -128,3 +128,17 @@ export const LoginResponseSchema = z.object({
 });
 
 export type LoginResponse = z.infer<typeof LoginResponseSchema>;
+
+export const UserResponseSchema = z.object({
+  message: z.string(),
+  data: z.object({
+    id: z.number(),
+    name: z.string(),
+    email: z.string().email(),
+    role: z.string(),
+    updated_at: z.string(),
+    created_at: z.string(),
+  }),
+});
+
+export type UserResponse = z.infer<typeof UserResponseSchema>;

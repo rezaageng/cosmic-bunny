@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import {
   LoginSchema,
   type RegisterResponse,
@@ -8,7 +9,6 @@ import {
   RegisterSchema,
   type RegisterSchemaType,
 } from '@/schemas/auth';
-import { cookies } from 'next/headers';
 
 export const register = async (
   _prevState: unknown,
@@ -64,13 +64,17 @@ export const register = async (
     await response.json(),
   );
 
-  if (response.status === 200 && responseParsed.success) {
-    cookies().set('token', responseParsed.data!.data!.token);
+  if (
+    response.status === 200 &&
+    responseParsed.success &&
+    responseParsed.data.data
+  ) {
+    cookies().set('token', responseParsed.data.data.token);
 
     redirect('/');
   }
 
-  return responseParsed.data!;
+  return responseParsed.data ?? { message: 'An error occurred' };
 };
 
 export const login = async (
@@ -111,11 +115,31 @@ export const login = async (
     await response.json(),
   );
 
-  if (response.status === 200 && responseParsed.success) {
-    cookies().set('token', responseParsed.data!.data!.token);
+  if (
+    response.status === 200 &&
+    responseParsed.success &&
+    responseParsed.data.data
+  ) {
+    cookies().set('token', responseParsed.data.data.token);
 
     redirect('/');
   }
 
-  return responseParsed.data!;
+  return responseParsed.data ?? { message: 'An error occurred' };
+};
+
+export const logout = async (): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  cookies().delete('token');
+  redirect('/login');
 };
