@@ -25,4 +25,18 @@ class CartController extends Controller
             'data' => $cart,
         ]);
     }
+
+    public function store(Request $request){
+        $request->validate([
+            'user_id'=>'required|exists:users,id',
+            'game_id'=>'required|exists:games,id',
+        ]);
+
+        $cart=Cart::create($request->all());
+
+        return response()->json([
+            'message'=>'library successfully created',
+            'data'=>$cart,
+        ]);
+    }
 }
