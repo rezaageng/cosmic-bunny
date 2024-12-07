@@ -48,4 +48,19 @@ class CartController extends Controller
             'data'=>$cart
         ]);
     }
+
+    public function update(Request $request, Cart $cart){
+        $request->validate([
+            'game_id'=>'required|exists:games,id',
+        ]);
+
+        $cart->update([
+            'game_id' => $request->game_id,  // Update cart
+        ]);
+
+        return response()->json([
+            'message'=>'Library update success',
+            'data'=>$cart
+        ]);
+    }
 }
