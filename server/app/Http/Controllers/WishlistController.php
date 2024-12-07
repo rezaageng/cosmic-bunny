@@ -28,4 +28,19 @@ class WishlistController extends Controller
 
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'game_id' => 'required|exists:games,id',
+        ]);
+
+        $wishlist = Wishlist::create($request->all());
+
+        return response()->json([
+            'message' => 'Wishlist added successfully',
+            'data' => $wishlist,
+        ]);
+    }
+
 }
