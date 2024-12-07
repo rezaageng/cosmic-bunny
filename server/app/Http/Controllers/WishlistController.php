@@ -43,4 +43,14 @@ class WishlistController extends Controller
         ]);
     }
 
+    public function show(Wishlist $wishlist){
+        $wishlist->load(['user', 'games']);
+
+        return response()->json([
+            'message'=>'Wishlist details',
+            'data'=>$wishlist
+        ]);
+    }
+
+    
 }
