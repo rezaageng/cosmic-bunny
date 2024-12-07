@@ -52,5 +52,21 @@ class WishlistController extends Controller
         ]);
     }
 
+
+    public function update(Request $request, Wishlist $wishlist){
+        $request->validate([
+            'game_id'=>'required|exists:games,id',
+        ]);
+
+        $wishlist->update([
+            'game_id' => $request->game_id,  
+        ]);
+
+        return response()->json([
+            'message'=>'Wishlist update success',
+            'data'=>$wishlist
+        ]);
+    }
+
     
 }
