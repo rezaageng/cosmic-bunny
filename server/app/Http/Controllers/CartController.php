@@ -39,4 +39,13 @@ class CartController extends Controller
             'data'=>$cart,
         ]);
     }
+
+    public function show(Cart $cart){
+        $cart->load(['user', 'games']);
+
+        return response()->json([
+            'message'=>'Cart details',
+            'data'=>$cart
+        ]);
+    }
 }
