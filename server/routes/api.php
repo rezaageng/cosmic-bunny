@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\WishlistController;
 
 Route::post('/auth/register', [AuthController::class,'register']);
 Route::post('/auth/login', [AuthController::class,'login']);
@@ -15,5 +16,6 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
     Route::apiResource('/games', GameController::class);
     Route::apiResource('/libraries', LibraryController::class);
+    Route::apiResource('/wishlists', WishlistController::class);
 });
 
