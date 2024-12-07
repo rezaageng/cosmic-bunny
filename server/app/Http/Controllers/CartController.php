@@ -59,8 +59,16 @@ class CartController extends Controller
         ]);
 
         return response()->json([
-            'message'=>'Library update success',
+            'message'=>'Cart update success',
             'data'=>$cart
+        ]);
+    }
+
+    public function destroy(Cart $cart){
+        $cart->delete();
+
+        return response()->json([
+            'message'=>'Cart Deleted'
         ]);
     }
 }
