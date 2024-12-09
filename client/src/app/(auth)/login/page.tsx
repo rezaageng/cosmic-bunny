@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { type ReactElement } from 'react';
+import Link from 'next/link';
 import { LoginForm } from '@/components/auth/login-form';
 
 export default function Login(): ReactElement {
@@ -21,9 +22,9 @@ export default function Login(): ReactElement {
         <LoginForm />
         <div>
           Don&apos;t have an account?&nbsp;
-          <a href="/register" className="text-indigo-500">
+          <Link href="/register" className="text-indigo-500">
             Register
-          </a>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { RegisterForm } from '@/components/auth/register-form';
 
 export default function Register(): JSX.Element {
@@ -18,9 +19,9 @@ export default function Register(): JSX.Element {
         <RegisterForm />
         <div>
           Already have an account?&nbsp;
-          <a href="/login" className="text-indigo-500">
+          <Link href="/login" className="text-indigo-500">
             Login
-          </a>
+          </Link>
         </div>
       </div>
     </section>
