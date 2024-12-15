@@ -9,7 +9,7 @@ export async function Navbar(): Promise<ReactElement> {
   const currentUser = await getCurrentUser({ token });
 
   return (
-    <nav className="flex items-center justify-between p-4">
+    <nav className="m-auto flex max-w-screen-2xl items-center justify-between p-4">
       <h1 className="text-2xl font-semibold">Hello {currentUser.data.name}</h1>
       <NavbarActions />
     </nav>
