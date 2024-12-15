@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Games extends Model
 {
-    protected $fillable=[
+    protected $fillable = [
         'name',
         'description',
         'publisher',
         'price',
     ];
-}
 
+    protected $casts = [
+        'price' => 'float',
+    ];
+}
