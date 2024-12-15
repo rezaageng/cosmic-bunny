@@ -1,7 +1,7 @@
-'use client'; // Error boundaries must be Client Components
+'use client';
 
 import { type ReactElement } from 'react';
-import { removeToken } from '@/lib/actions';
+import { logout } from '@/lib/actions';
 
 export default function Error({
   error,
@@ -15,15 +15,12 @@ export default function Error({
       <h2>Something went wrong!</h2>
       <button
         type="button"
-        onClick={
-          // Attempt to recover by trying to re-render the segment
-          () => {
-            if (error.message === '401') {
-              removeToken();
-            }
-            reset();
+        onClick={async () => {
+          if (error.message === '401') {
+            await logout();
           }
-        }
+          reset();
+        }}
       >
         Try again
       </button>
