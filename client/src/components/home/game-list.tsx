@@ -12,26 +12,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAnimate } from 'motion/react';
 import Link from 'next/link';
 import { useResponsive } from '@/hooks/use-responsive';
+import type { GamesResponse } from '@/schemas/games';
 
 interface GameListProps {
   title: string;
+  games: GamesResponse['data'];
 }
 
-export function GameList({ title }: GameListProps): ReactElement {
-  const games = [
-    'Elden Ring Lord of ther rings special edition',
-    'Hogwarts Legacy',
-    'Starfield',
-    'Diablo IV',
-    "Baldur's Gate 3",
-    'Final Fantasy XVI',
-    'Street Fighter 6',
-    'Dead Space Remake',
-    'Forza Motorsport',
-    'Star Wars Jedi: Survivor',
-    'Star Wars Jedi: Survivorsdfsdf',
-  ];
-
+export function GameList({ title, games }: GameListProps): ReactElement {
   const [itemWidth, setItemWidth] = useState(0);
   const [totalItem, setTotalItem] = useState(0);
   const [currPos, setCurrPos] = useState(0);
@@ -144,7 +132,7 @@ export function GameList({ title }: GameListProps): ReactElement {
           {games.map((game, idx) => (
             <Link
               key={`newlyReleased${idx.toString()}`}
-              href={game}
+              href={`/game/${game.id.toString()}`}
               className="group space-y-2"
             >
               <div
@@ -154,15 +142,15 @@ export function GameList({ title }: GameListProps): ReactElement {
               >
                 <Image
                   src="/images/placeholder.png"
-                  alt={game}
+                  alt={game.name}
                   fill
                   className="object-cover group-hover:brightness-125"
                 />
               </div>
               <h3 className="line-clamp-2 font-semibold text-gray-100 sm:text-lg">
-                {game}
+                {game.name}
               </h3>
-              <span className="block">IDR 560,000</span>
+              <span className="block">IDR {game.price}</span>
             </Link>
           ))}
         </div>

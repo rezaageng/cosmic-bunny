@@ -1,8 +1,14 @@
 import Image from 'next/image';
 import type { ReactElement } from 'react';
+import { cookies } from 'next/headers';
 import { GameList } from '@/components/home/game-list';
+import { getGames } from '@/services';
 
-export default function Home(): ReactElement {
+export default async function Home(): Promise<ReactElement> {
+  const token = cookies().get('token')?.value ?? '';
+
+  const games = await getGames({ token });
+
   return (
     <section className="mx-auto max-w-screen-2xl space-y-8 px-4">
       {/* Featured Games Section */}
@@ -15,7 +21,7 @@ export default function Home(): ReactElement {
         />
       </div>
       {/* Newly Released Games Section */}
-      <GameList title="New Games" />
+      <GameList title="New Games" games={games.data} />
     </section>
   );
 }
