@@ -156,7 +156,7 @@ function SearchModal(): ReactElement {
           {data.data.map((game) => (
             <li key={`search-result-${game.id.toString()}`}>
               <Link
-                href={`/games/${game.id.toString()}`}
+                href={`/game/${game.id.toString()}`}
                 className="flex items-center gap-2 p-4 hover:bg-gray-500"
               >
                 <Image
