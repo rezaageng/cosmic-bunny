@@ -65,7 +65,7 @@ export function NavbarActions(): ReactElement {
         </div>
       </button>
       {isDropdownOpen ? <UserDropdown ref={dropdownRef} /> : null}
-      {isSearchOpen ? <SearchModal /> : null}
+      {isSearchOpen ? <SearchModal setIsSearchOpen={setIsSearchOpen} /> : null}
       {isSearchOpen ? (
         <div
           ref={modalBackgroundRef}
@@ -104,7 +104,11 @@ const UserDropdown = forwardRef<HTMLUListElement>(
   },
 );
 
-function SearchModal(): ReactElement {
+function SearchModal({
+  setIsSearchOpen,
+}: {
+  setIsSearchOpen: (value: boolean) => void;
+}): ReactElement {
   const [data, setData] = useState<GamesResponse | null>(null);
   const [search, setSearch] = useState('');
 
@@ -157,6 +161,9 @@ function SearchModal(): ReactElement {
             <li key={`search-result-${game.id.toString()}`}>
               <Link
                 href={`/game/${game.id.toString()}`}
+                onClick={() => {
+                  setIsSearchOpen(false);
+                }}
                 className="flex items-center gap-2 p-4 hover:bg-gray-500"
               >
                 <Image
