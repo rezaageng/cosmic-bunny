@@ -5,7 +5,7 @@ import type { GamesResponse } from '@/schemas/games';
 
 interface GameCardProps {
   game: GamesResponse['data'][0];
-  width: number;
+  width?: number;
 }
 
 export function GameCard({ game, width }: GameCardProps): ReactElement {
