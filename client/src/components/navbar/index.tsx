@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import type { ReactElement } from 'react';
 import { getCurrentUser } from '@/services';
 import { NavbarActions } from '@/components/navbar/navbar-actions';
+import { Nav } from '@/components/navbar/nav';
 
 export async function Navbar(): Promise<ReactElement> {
   const token = cookies().get('token')?.value ?? '';
@@ -10,7 +11,10 @@ export async function Navbar(): Promise<ReactElement> {
 
   return (
     <nav className="m-auto flex max-w-screen-2xl items-center justify-between p-4">
-      <h1 className="text-2xl font-semibold">Hello {currentUser.data.name}</h1>
+      <h1 className="mr-4 text-2xl font-semibold">
+        Hello {currentUser.data.name}
+      </h1>
+      <Nav />
       <NavbarActions />
     </nav>
   );
