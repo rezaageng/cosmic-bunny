@@ -11,6 +11,7 @@ class Games extends Model
         'description',
         'publisher',
         'price',
+        'image'
     ];
 
     protected $casts = [
