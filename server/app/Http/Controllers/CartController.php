@@ -8,21 +8,27 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     public function index(Request $request){
-        $cart = Cart::with(['user', 'game']);
+        $user = $request->user();
 
-        if($request->has('user_id')){
-            $cart->where('user_id', $request->user_id);
-        }
-    
-        if($request->has('game_id')){
-            $cart->where('game_id', $request->game_id);
+        if ($user->role === 'user') {
+            $cart = Cart::where('user_id', $user->id)->get();
+        } else {
+            $cart = Cart::all();
         }
 
-        $cart=$cart->get();
+        $data = $cart->map(function ($cart) {
+            return $cart->game;
+        });
+
+        $amount = $cart->sum(function ($cart) {
+            return $cart->game->price;
+        } );
 
         return response()->json([
-            'message' => 'List Carts',
-            'data' => $cart,
+            'data' => [
+                'games' => $data,
+                'amount' => $amount,
+            ]
         ]);
     }
 
@@ -40,29 +46,6 @@ class CartController extends Controller
         ]);
     }
 
-    public function show(Cart $cart){
-        $cart->load(['user', 'games']);
-
-        return response()->json([
-            'message'=>'Cart details',
-            'data'=>$cart
-        ]);
-    }
-
-    public function update(Request $request, Cart $cart){
-        $request->validate([
-            'game_id'=>'required|exists:games,id',
-        ]);
-
-        $cart->update([
-            'game_id' => $request->game_id,  // Update cart
-        ]);
-
-        return response()->json([
-            'message'=>'Cart update success',
-            'data'=>$cart
-        ]);
-    }
 
     public function destroy(Cart $cart){
         $cart->delete();
