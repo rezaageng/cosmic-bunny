@@ -34,15 +34,26 @@ class CartController extends Controller
 
     public function store(Request $request){
         $request->validate([
-            'user_id'=>'required|exists:users,id',
-            'game_id'=>'required|exists:games,id',
+            'user_id' => 'required|exists:users,id',
+            'game_id' => 'required|exists:games,id',
         ]);
 
-        $cart=Cart::create($request->all());
+        // Check if the user already has the game in their library
+        $existingcart = Cart::where('user_id', $request->user_id)
+            ->where('game_id', $request->game_id)
+            ->first();
+
+        if ($existingcart) {
+            return response()->json([
+                'message' => 'User already has this game in their Cart',
+            ], 400);
+        }
+
+        $cart = Cart::create($request->all());
 
         return response()->json([
-            'message'=>'library successfully created',
-            'data'=>$cart,
+            'message' => 'Library successfully created',
+            'data' => $cart,
         ]);
     }
 
