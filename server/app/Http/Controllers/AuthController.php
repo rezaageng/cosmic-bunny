@@ -14,6 +14,9 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|string|email|unique:users',
+            'image' => [
+                'string',
+            ],
             'role' => [
                 'required',
                 'string',
@@ -33,6 +36,7 @@ class AuthController extends Controller
         $data['user'] = User::create([
             'name' => $request ->name,
             'email' => $request ->email,
+            'image' => $request ->image,
             'password' => $request ->password,
             'role' => $request->role,
         ]);
