@@ -30,7 +30,7 @@ export function Nav(): ReactElement {
         href="/wishlist"
         className={cn(
           'text-gray-300 hover:text-white',
-          pathname === '/library' ? 'text-white' : 'text-gray-300',
+          pathname === '/wishlist' ? 'text-white' : 'text-gray-300',
         )}
       >
         Wishlist

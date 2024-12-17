@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import type { ReactElement } from 'react';
 import { Button } from '@/components/button';
-import { ReactElement } from 'react';
 
 const games = [
   {
