@@ -26,6 +26,15 @@ export function Nav(): ReactElement {
       >
         Library
       </Link>
+      <Link
+        href="/wishlist"
+        className={cn(
+          'text-gray-300 hover:text-white',
+          pathname === '/wishlist' ? 'text-white' : 'text-gray-300',
+        )}
+      >
+        Wishlist
+      </Link>
     </div>
   );
 }
