@@ -52,7 +52,6 @@ const games = [
 export default function Library(): ReactElement {
   return (
     <section className="mx-auto max-w-screen-2xl space-y-8 px-4">
-      <h2 className="text-left text-2xl font-bold text-gray-100">Library</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {games.map((game) => (
           <GameCard key={game.id} game={game} />
