@@ -2,9 +2,9 @@ import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { notFound } from 'next/navigation';
 import { getGame } from '@/services';
-import { Button } from '@/components/button';
 import { formatCurrency } from '@/lib/utils';
 import { GameDescription } from '@/components/game/game-description';
+import { GameActions } from '@/components/game/game-actions';
 
 export default async function GamePage({
   params,
@@ -36,9 +36,7 @@ export default async function GamePage({
             <span className="block text-xl font-semibold">
               {formatCurrency(data.price)}
             </span>
-            <Button>Buy</Button>
-            <Button variant="secondary">Add To Cart</Button>
-            <Button variant="secondary">Add To Wishlist</Button>
+            <GameActions id={data.id} />
           </div>
         </div>
         <div className="w-full space-y-4 sm:w-[70%]">
