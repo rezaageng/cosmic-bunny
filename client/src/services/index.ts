@@ -1,5 +1,10 @@
 import { type UserResponse, UserResponseSchema } from '@/schemas/auth';
-import { type GamesResponse, GamesResponseSchema } from '@/schemas/games';
+import {
+  type GameResponse,
+  GameResponseSchema,
+  type GamesResponse,
+  GamesResponseSchema,
+} from '@/schemas/games';
 
 export const getCurrentUser = async ({
   token,
@@ -36,10 +41,8 @@ export const getCurrentUser = async ({
 };
 
 export const getGames = async ({
-  token,
   search,
 }: {
-  token: string;
   search?: string;
 }): Promise<GamesResponse> => {
   const response = await fetch(
@@ -49,14 +52,9 @@ export const getGames = async ({
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     },
   );
-
-  if (response.status === 401) {
-    throw new Error('401');
-  }
 
   if (!response.ok) {
     throw new Error('Failed to fetch games');
@@ -66,6 +64,40 @@ export const getGames = async ({
 
   if (!data.success) {
     throw new Error('Failed to parse games response');
+  }
+
+  return data.data;
+};
+
+export const getGame = async (id: string): Promise<GameResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/games/${id}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  if (response.status === 404) {
+    const data = GameResponseSchema.safeParse({
+      messages: 'Game not found',
+      data: null,
+    });
+
+    if (!data.success) {
+      throw new Error('Failed to parse game response');
+    }
+
+    return data.data;
+  }
+
+  const data = GameResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse game response');
   }
 
   return data.data;

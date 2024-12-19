@@ -1,13 +1,10 @@
 import Image from 'next/image';
 import type { ReactElement } from 'react';
-import { cookies } from 'next/headers';
 import { GameList } from '@/components/home/game-list';
 import { getGames } from '@/services';
 
 export default async function Home(): Promise<ReactElement> {
-  const token = cookies().get('token')?.value ?? '';
-
-  const games = await getGames({ token });
+  const games = await getGames({});
 
   return (
     <section className="mx-auto max-w-screen-2xl space-y-8 px-4">

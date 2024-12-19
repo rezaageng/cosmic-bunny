@@ -19,7 +19,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/actions';
-import { cn, detectOS, getCookies, type OS } from '@/lib/utils';
+import { cn, detectOS, type OS } from '@/lib/utils';
 import { type GamesResponse } from '@/schemas/games';
 import { getGames } from '@/services';
 
@@ -176,10 +176,8 @@ function SearchModal({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const token = decodeURIComponent(getCookies('token'));
-
     const fetchGames = async (): Promise<void> => {
-      const games = await getGames({ token, search });
+      const games = await getGames({ search });
 
       setData(games);
     };
@@ -229,11 +227,11 @@ function SearchModal({
                   className="flex items-center gap-2 p-4 hover:bg-gray-500"
                 >
                   <Image
-                    src="/images/auth-image.jpg"
+                    src={game.image}
                     alt="cover"
                     width={80}
-                    height={60}
-                    className="aspect-[4/3] w-20 rounded-lg"
+                    height={40}
+                    className="aspect-[2] w-20 rounded object-cover"
                   />
                   <div>
                     <span className="block font-semibold">{game.name}</span>

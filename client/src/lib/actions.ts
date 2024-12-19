@@ -9,6 +9,8 @@ import {
   RegisterSchema,
   type RegisterSchemaType,
 } from '@/schemas/auth';
+import { getCurrentUser } from '@/services';
+import { WishlistBodySchema } from '@/schemas/wishlist';
 
 export const register = async (
   _prevState: unknown,
@@ -142,4 +144,36 @@ export const logout = async (): Promise<void> => {
 
   cookies().delete('token');
   redirect('/login');
+};
+
+export const addToWishlist = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  const body = WishlistBodySchema.safeParse({
+    gameId: id,
+    userId: user.data.id,
+  });
+
+  if (!body.success) {
+    throw new Error('Failed to parse wishlist body');
+  }
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlists`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      game_id: body.data.gameId,
+      user_id: body.data.userId,
+    }),
+  });
 };
