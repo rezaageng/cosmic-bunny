@@ -53,8 +53,6 @@ const games = [
 export default function Wishlist(): ReactElement {
   return (
     <section className="mx-auto max-w-screen-2xl space-y-6 p-4">
-      <h2 className="text-3xl font-bold text-white">Nama User Wishlist</h2>
-
       {/* Game List */}
       <div className="space-y-6">
         {games.map((game) => (
