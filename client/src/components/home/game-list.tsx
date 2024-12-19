@@ -128,13 +128,15 @@ export function GameList({ title, games }: GameListProps): ReactElement {
       </div>
       <div ref={wrapperRef} className="w-full overflow-clip">
         <div ref={scope} className="flex gap-4">
-          {games.map((game) => (
-            <GameCard
-              key={`new-release-${game.id.toString()}`}
-              game={game}
-              width={itemWidth}
-            />
-          ))}
+          {games.length !== 0
+            ? games.map((game) => (
+                <GameCard
+                  key={`new-release-${game.id.toString()}`}
+                  game={game}
+                  width={itemWidth}
+                />
+              ))
+            : null}
         </div>
       </div>
     </div>

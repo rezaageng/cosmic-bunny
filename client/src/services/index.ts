@@ -36,10 +36,8 @@ export const getCurrentUser = async ({
 };
 
 export const getGames = async ({
-  token,
   search,
 }: {
-  token: string;
   search?: string;
 }): Promise<GamesResponse> => {
   const response = await fetch(
@@ -49,14 +47,9 @@ export const getGames = async ({
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     },
   );
-
-  if (response.status === 401) {
-    throw new Error('401');
-  }
 
   if (!response.ok) {
     throw new Error('Failed to fetch games');

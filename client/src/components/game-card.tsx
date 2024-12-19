@@ -13,10 +13,10 @@ export function GameCard({ game, width }: GameCardProps): ReactElement {
     <Link href={`/game/${game.id.toString()}`} className="group space-y-2">
       <div
         style={{ width }}
-        className="relative aspect-[3/2] flex-shrink-0 overflow-clip rounded-2xl"
+        className="relative aspect-[2] flex-shrink-0 overflow-clip rounded-2xl"
       >
         <Image
-          src="/images/placeholder.png"
+          src={game.image}
           alt={game.name}
           fill
           className="object-cover group-hover:brightness-125"
