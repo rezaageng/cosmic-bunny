@@ -52,6 +52,9 @@ export function GameList({ title, games }: GameListProps): ReactElement {
     window.addEventListener('resize', () => {
       updateItemWidth();
       setCurrPos(0);
+
+      if (!scope.current) return;
+
       void animate(scope.current, {
         x: 0,
       });
