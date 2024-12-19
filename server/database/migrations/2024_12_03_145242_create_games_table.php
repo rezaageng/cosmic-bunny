@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
+            $table->text('description');
             $table->string('publisher');
             $table->decimal('price');
             $table->string('image');
@@ -29,6 +29,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('games');
     }
-
-
 };
