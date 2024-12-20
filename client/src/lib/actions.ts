@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import {
   LoginSchema,
   type RegisterResponse,
@@ -176,6 +177,32 @@ export const addToWishlist = async (id: number): Promise<void> => {
       user_id: body.data.userId,
     }),
   });
+
+  revalidatePath('/wishlist');
+};
+
+export const deleteFromWishlist = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/wishlists/${id.toString()}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  revalidatePath('/wishlist');
 };
 
 export const addToLibrary = async (id: number): Promise<void> => {

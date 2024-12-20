@@ -20,9 +20,12 @@ class CartController extends Controller
         $data = $cart->map(function ($cart) {
             return [
                 'id' => $cart->id,
-                'name' => $cart->game->name,
-                'image' => $cart->game->image,
-                'price' => $cart->game->price,
+                'game' => [
+                    'id' => $cart->game->id,
+                    'name' => $cart->game->name,
+                    'image' => $cart->game->image,
+                    'price' => $cart->game->price,
+                ],
             ];
         });
 
