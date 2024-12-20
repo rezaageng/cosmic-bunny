@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\WishlistController;
 
@@ -22,5 +23,9 @@ Route::middleware(['auth:sanctum'])->group(function(){
     Route::apiResource('/wishlists', WishlistController::class);
 
     Route::apiResource('/carts', CartController::class);
+
+    Route::apiResource('/steam-games', SteamController::class)->only(['index', 'show']);
 });
+
+
 
