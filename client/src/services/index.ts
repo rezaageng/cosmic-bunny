@@ -5,6 +5,7 @@ import {
   type GamesResponse,
   GamesResponseSchema,
 } from '@/schemas/games';
+import { LibraryResponse, LibraryResponseSchema } from '@/schemas/library';
 
 export const getCurrentUser = async ({
   token,
@@ -98,6 +99,36 @@ export const getGame = async (id: string): Promise<GameResponse> => {
 
   if (!data.success) {
     throw new Error('Failed to parse game response');
+  }
+
+  return data.data;
+};
+
+export const getLibrary = async ({
+  token,
+}: {
+  token: string;
+}): Promise<LibraryResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/libraries`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch games');
+  }
+
+  const data = LibraryResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse games response');
   }
 
   return data.data;
