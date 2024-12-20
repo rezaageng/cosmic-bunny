@@ -18,7 +18,11 @@ class LibraryController extends Controller
         }
 
         $data = $libraries->map(function ($library) {
-            return $library->game;
+            return [
+                'id' => $library->id,
+                'name' => $library->game->name,
+                'image' => $library->game->image,
+            ];
         });
 
         return response()->json([
