@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Rabbit } from 'lucide-react';
 import { getWishlist } from '@/services';
 import { WishlistActions } from '@/components/wishlist/wishlist-actions';
+import { formatCurrency } from '@/lib/utils';
 
 export default async function Wishlist(): Promise<ReactElement> {
   const token = cookies().get('token')?.value ?? '';
@@ -40,7 +41,7 @@ export default async function Wishlist(): Promise<ReactElement> {
                     {wishlist.game.name}
                   </h3>
                   <span className="text-gray-400">
-                    IDR {wishlist.game.price}
+                    {formatCurrency(wishlist.game.price)}
                   </span>
                 </div>
               </Link>

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactElement } from 'react';
+import { formatCurrency } from '@/lib/utils';
 
 interface GameCardProps {
   gameId: number;
@@ -33,7 +34,7 @@ export function GameCard({
       <h3 className="line-clamp-2 font-semibold text-gray-100 sm:text-lg">
         {name}
       </h3>
-      {price ? <span className="block">IDR {price}</span> : null}
+      {price ? <span className="block">{formatCurrency(price)}</span> : null}
     </Link>
   );
 }
