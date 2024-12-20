@@ -1,4 +1,5 @@
 import { type UserResponse, UserResponseSchema } from '@/schemas/auth';
+import { type CartResponse, CartResponseSchema } from '@/schemas/cart';
 import {
   type GameResponse,
   GameResponseSchema,
@@ -160,6 +161,33 @@ export const getWishlist = async ({
   }
 
   const data = WishlistResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse games response');
+  }
+
+  return data.data;
+};
+
+export const getCart = async ({
+  token,
+}: {
+  token: string;
+}): Promise<CartResponse> => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch games');
+  }
+
+  const data = CartResponseSchema.safeParse(await response.json());
 
   if (!data.success) {
     throw new Error('Failed to parse games response');
