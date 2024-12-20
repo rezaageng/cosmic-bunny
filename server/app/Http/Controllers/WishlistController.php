@@ -21,9 +21,12 @@ class WishlistController extends Controller
         $data = $wishlist->map(function ($wishlist) {
             return [
                 'id' => $wishlist->id,
-                'name' => $wishlist->game->name,
-                'image' => $wishlist->game->image,
-                'price' => $wishlist->game->price,
+                'game' => [
+                    'id' => $wishlist->game->id,
+                    'name' => $wishlist->game->name,
+                    'image' => $wishlist->game->image,
+                    'price' => $wishlist->game->price,
+                ],
             ];
         });
 
