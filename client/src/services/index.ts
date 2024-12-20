@@ -5,7 +5,7 @@ import {
   type GamesResponse,
   GamesResponseSchema,
 } from '@/schemas/games';
-import { LibraryResponse, LibraryResponseSchema } from '@/schemas/library';
+import { type LibraryResponse, LibraryResponseSchema } from '@/schemas/library';
 
 export const getCurrentUser = async ({
   token,
