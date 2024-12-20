@@ -72,7 +72,7 @@ class SteamController extends Controller
                     "id" => $game['steam_appid'],
                     "name" => $game['name'],
                     "header_img" => $game['header_image'],
-                    "short_desc" => $game['short_description'],
+                    "short_description" => $game['short_description'],
                     "description" => $game['about_the_game'],
                     "publisher" => $game['publishers'],
                     "price" => $game['price_overview']['final'] ?? 'free',
