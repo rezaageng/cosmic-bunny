@@ -235,6 +235,8 @@ export const addToLibrary = async (id: number): Promise<void> => {
       user_id: body.data.userId,
     }),
   });
+
+  revalidatePath('/library');
 };
 
 export const addToCart = async (id: number): Promise<void> => {
@@ -267,4 +269,27 @@ export const addToCart = async (id: number): Promise<void> => {
       user_id: body.data.userId,
     }),
   });
+
+  revalidatePath('/cart');
+};
+
+export const deleteFromCart = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts/${id.toString()}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  revalidatePath('/cart');
 };
