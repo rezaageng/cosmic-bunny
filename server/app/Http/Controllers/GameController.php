@@ -26,6 +26,9 @@ class GameController extends Controller
             'short_description'=>'required|string',
             'description'=>'required|string',
             'publisher'=>'required|string',
+            'imagg' => [
+                'string',
+            ],
             'price'=>'required|decimal:,8,2',
             'header_img' => 'required|string',
             'image' => 'required|string'
@@ -52,6 +55,9 @@ class GameController extends Controller
             'short_description'=>'required|string',
             'description'=>'required|string',
             'publisher'=>'required|string',
+            'image' => [
+                'string',
+            ],
             'price'=>'required|decimal:,8,2',
             'header_img' => 'required|string',
             'image' => 'required|string'

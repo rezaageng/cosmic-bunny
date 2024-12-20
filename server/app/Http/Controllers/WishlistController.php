@@ -3,30 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
+use App\Models\wishlist as ModelsWishlist;
 use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
     public function index(Request $request)
     {
-        $wishlist = Wishlist::with(['user', 'game']);
-        
-        if($request->has('user_id')){
-            $wishlist->where('user_id', $request->user_id);
+        $user = $request->user();
+
+        if ($user->role === 'user') {
+            $wishlist = Wishlist::where('user_id', $user->id)->get();
+        } else {
+            $wishlist = Wishlist::all();
         }
 
-        if($request->has('game_id')){
-            $wishlist->where('game_id', $request->game_id);
-        }
-
-        $wishlist = $wishlist->get();
+        $data = $wishlist->map(function ($wishlist) {
+            return $wishlist->game;
+        });
 
         return response()->json([
-            'message' => 'List of wishlists',
-            'data' => $wishlist,
+            'data' => $data,
         ]);
-
     }
+
 
     public function store(Request $request)
     {
@@ -35,39 +35,26 @@ class WishlistController extends Controller
             'game_id' => 'required|exists:games,id',
         ]);
 
+        // Check if the user already has the game in their Wishlist
+        $existingWishlist = Wishlist::where('user_id', $request->user_id)
+            ->where('game_id', $request->game_id)
+            ->first();
+
+        if ($existingWishlist) {
+            return response()->json([
+                'message' => 'User already has this game in their Wishlist',
+            ], 400);
+        }
+
         $wishlist = Wishlist::create($request->all());
 
         return response()->json([
-            'message' => 'Wishlist added successfully',
+            'message' => 'Wishlist successfully created',
             'data' => $wishlist,
         ]);
     }
 
-    public function show(Wishlist $wishlist){
-        $wishlist->load(['user', 'games']);
-
-        return response()->json([
-            'message'=>'Wishlist details',
-            'data'=>$wishlist
-        ]);
-    }
-
-
-    public function update(Request $request, Wishlist $wishlist){
-        $request->validate([
-            'game_id'=>'required|exists:games,id',
-        ]);
-
-        $wishlist->update([
-            'game_id' => $request->game_id,  
-        ]);
-
-        return response()->json([
-            'message'=>'Wishlist update success',
-            'data'=>$wishlist
-        ]);
-    }
-
+   
     public function destroy(Wishlist $wishlist){
         $wishlist->delete();
 

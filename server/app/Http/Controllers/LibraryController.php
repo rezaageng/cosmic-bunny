@@ -7,72 +7,59 @@ use Illuminate\Http\Request;
 
 class LibraryController extends Controller
 {
-    public function index(Request $request){
-        $library = Library::with(['user', 'game']);
+    public function index(Request $request)
+    {
+        $user = $request->user();
 
-        if($request->has('user_id')){
-            $library->where('user_id', $request->user_id);
-        }
-    
-        if($request->has('game_id')){
-            $library->where('game_id', $request->game_id);
+        if ($user->role === 'user') {
+            $libraries = Library::where('user_id', $user->id)->get();
+        } else {
+            $libraries = Library::all();
         }
 
-        $library=$library->get();
+        $data = $libraries->map(function ($library) {
+            return $library->game;
+        });
 
         return response()->json([
-            'message' => 'List Library',
-            'data' => $library,
+            'data' => $data,
         ]);
     }
 
     //create library
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
-            'user_id'=>'required|exists:users,id',
-            'game_id'=>'required|exists:games,id',
+            'user_id' => 'required|exists:users,id',
+            'game_id' => 'required|exists:games,id',
         ]);
 
-        $library=Library::create($request->all());
+        // Check if the user already has the game in their library
+        $existingLibrary = Library::where('user_id', $request->user_id)
+            ->where('game_id', $request->game_id)
+            ->first();
+
+        if ($existingLibrary) {
+            return response()->json([
+                'message' => 'User already has this game in their library',
+            ], 400);
+        }
+
+        $library = Library::create($request->all());
 
         return response()->json([
-            'message'=>'library successfully created',
-            'data'=>$library,
-        ]);
-    }
-
-    //show
-    public function show(Library $library){
-        $library->load(['user', 'games']);
-
-        return response()->json([
-            'message'=>'Library details',
-            'data'=>$library
-        ]);
-    }
-
-    //update
-    public function update(Request $request, Library $library){
-        $request->validate([
-            'game_id'=>'required|exists:games,id',
-        ]);
-
-        $library->update([
-            'game_id' => $request->game_id,  // Update game
-        ]);
-
-        return response()->json([
-            'message'=>'Library update success',
-            'data'=>$library
+            'message' => 'Library successfully created',
+            'data' => $library,
         ]);
     }
 
     //delete
-    public function destroy(Library $library){
+    public function destroy(Library $library)
+    {
         $library->delete();
 
         return response()->json([
-            'message'=>'Library Deleted'
+            'message' => 'Library Deleted'
         ]);
     }
 }

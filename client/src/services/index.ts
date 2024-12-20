@@ -37,17 +37,22 @@ export const getCurrentUser = async ({
 
 export const getGames = async ({
   token,
+  search,
 }: {
   token: string;
+  search?: string;
 }): Promise<GamesResponse> => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/games`, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/games?search=${search ?? ''}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (response.status === 401) {
     throw new Error('401');

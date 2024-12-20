@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import {
   useCallback,
   useEffect,
@@ -10,9 +9,9 @@ import {
 } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAnimate } from 'motion/react';
-import Link from 'next/link';
 import { useResponsive } from '@/hooks/use-responsive';
 import type { GamesResponse } from '@/schemas/games';
+import { GameCard } from '@/components/game-card';
 
 interface GameListProps {
   title: string;
@@ -129,29 +128,12 @@ export function GameList({ title, games }: GameListProps): ReactElement {
       </div>
       <div ref={wrapperRef} className="w-full overflow-clip">
         <div ref={scope} className="flex gap-4">
-          {games.map((game, idx) => (
-            <Link
-              key={`newlyReleased${idx.toString()}`}
-              href={`/game/${game.id.toString()}`}
-              className="group space-y-2"
-            >
-              <div
-                style={{ width: itemWidth }}
-                key={`newlyReleased${idx.toString()}`}
-                className="relative aspect-[3/2] flex-shrink-0 overflow-clip rounded-2xl"
-              >
-                <Image
-                  src="/images/placeholder.png"
-                  alt={game.name}
-                  fill
-                  className="object-cover group-hover:brightness-125"
-                />
-              </div>
-              <h3 className="line-clamp-2 font-semibold text-gray-100 sm:text-lg">
-                {game.name}
-              </h3>
-              <span className="block">IDR {game.price}</span>
-            </Link>
+          {games.map((game) => (
+            <GameCard
+              key={`new-release-${game.id.toString()}`}
+              game={game}
+              width={itemWidth}
+            />
           ))}
         </div>
       </div>
