@@ -35,7 +35,7 @@ class CartController extends Controller
 
         return response()->json([
             'data' => [
-                'games' => $data,
+                'items' => $data,
                 'amount' => $amount,
             ]
         ]);
