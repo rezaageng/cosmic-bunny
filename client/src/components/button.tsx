@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactElement } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'text';
 }
 
 export function Button({
@@ -24,6 +24,7 @@ export function Button({
           'cursor-not-allowed bg-indigo-500': variant === 'primary' && disabled,
           'bg-gray-700 active:bg-gray-800': variant === 'secondary',
           'cursor-not-allowed bg-gray-500': variant === 'secondary' && disabled,
+          'bg-transparent p-0 font-normal hover:underline': variant === 'text',
         },
         className,
       )}

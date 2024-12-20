@@ -6,6 +6,10 @@ import {
   GamesResponseSchema,
 } from '@/schemas/games';
 import { type LibraryResponse, LibraryResponseSchema } from '@/schemas/library';
+import {
+  type WishlistResponse,
+  WishlistResponseSchema,
+} from '@/schemas/wishlist';
 
 export const getCurrentUser = async ({
   token,
@@ -126,6 +130,36 @@ export const getLibrary = async ({
   }
 
   const data = LibraryResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse games response');
+  }
+
+  return data.data;
+};
+
+export const getWishlist = async ({
+  token,
+}: {
+  token: string;
+}): Promise<WishlistResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/wishlists`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch games');
+  }
+
+  const data = WishlistResponseSchema.safeParse(await response.json());
 
   if (!data.success) {
     throw new Error('Failed to parse games response');

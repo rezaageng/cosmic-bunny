@@ -1,87 +1,53 @@
 import Image from 'next/image';
 import type { ReactElement } from 'react';
-import { Button } from '@/components/button';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { Rabbit } from 'lucide-react';
+import { getWishlist } from '@/services';
+import { WishlistActions } from '@/components/wishlist/wishlist-actions';
 
-const games = [
-  {
-    name: 'Forza Horizon 4',
-    description: 'lorem ipsum',
-    publisher: 'atlus',
-    price: 460000,
-    updated_at: '2024-12-16T03:08:07.000000Z',
-    created_at: '2024-12-16T03:08:07.000000Z',
-    id: 6,
-  },
-  {
-    name: 'Minecraft',
-    description: 'lorem ipsum',
-    publisher: 'atlus',
-    price: 10000,
-    updated_at: '2024-12-16T03:08:07.000000Z',
-    created_at: '2024-12-16T03:08:07.000000Z',
-    id: 6,
-  },
-  {
-    name: 'Lego Star Wars',
-    description: 'lorem ipsum',
-    publisher: 'atlus',
-    price: 15000,
-    updated_at: '2024-12-16T03:08:07.000000Z',
-    created_at: '2024-12-16T03:08:07.000000Z',
-    id: 6,
-  },
-  {
-    name: 'Elden Ring',
-    description: 'lorem ipsum',
-    publisher: 'atlus',
-    price: 79000,
-    updated_at: '2024-12-16T03:08:07.000000Z',
-    created_at: '2024-12-16T03:08:07.000000Z',
-    id: 6,
-  },
-  {
-    name: 'GTA V',
-    description: 'lorem ipsum',
-    publisher: 'atlus',
-    price: 130000,
-    updated_at: '2024-12-16T03:08:07.000000Z',
-    created_at: '2024-12-16T03:08:07.000000Z',
-    id: 6,
-  },
-];
+export default async function Wishlist(): Promise<ReactElement> {
+  const token = cookies().get('token')?.value ?? '';
 
-export default function Wishlist(): ReactElement {
+  const { data } = await getWishlist({ token });
+
   return (
-    <section className="mx-auto max-w-screen-2xl space-y-6 p-4">
-      {/* Game List */}
-      <div className="space-y-6">
-        {games.map((game) => (
-          <div
-            key={game.id}
-            className="flex items-center justify-between space-x-6 rounded-2xl bg-gray-800 p-4"
-          >
-            {/* Image */}
-
-            {/* Game Info */}
-            <div className="flex items-center gap-x-8 text-white">
-              <Image
-                className="aspect-[4/3] w-32 rounded"
-                src="/images/placeholder.png"
-                alt="placeholder"
-                width={28}
-                height={50}
-              />
-              <div>
-                <h3 className="text-lg font-semibold">{game.name}</h3>
-                <span className="text-gray-400">IDR {game.price}</span>
-              </div>
-            </div>
-            <div className="space-y-2 text-lg font-semibold">
-              <Button className="bg-blue-500">Add to Cart</Button>
-              <Button className="bg-red-500">Remove</Button>
-            </div>
+    <section className="mx-auto max-w-screen-lg p-4">
+      <div className="space-y-4">
+        {data.length === 0 ? (
+          <div className="grid h-[calc(100svh-80px-32px)] w-full place-items-center">
+            <Rabbit size={256} className="w-full text-zinc-800" />
           </div>
-        ))}
+        ) : (
+          data.map((wishlist) => (
+            <div
+              key={wishlist.id}
+              className="flex flex-col space-x-6 rounded-lg bg-zinc-900 p-4 sm:flex-row sm:justify-between"
+            >
+              <Link
+                href={`/game/${wishlist.game.id.toString()}`}
+                className="flex items-center gap-x-4 text-white"
+              >
+                <Image
+                  className="aspect-[2] w-32 rounded object-cover"
+                  src={wishlist.game.image}
+                  alt={wishlist.game.name}
+                  width={128}
+                  height={64}
+                />
+                <div>
+                  <h3 className="line-clamp-1 text-lg font-semibold">
+                    {wishlist.game.name}
+                  </h3>
+                  <span className="text-gray-400">
+                    IDR {wishlist.game.price}
+                  </span>
+                </div>
+              </Link>
+              <WishlistActions id={wishlist.id} gameID={wishlist.game.id} />
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
