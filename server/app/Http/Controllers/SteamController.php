@@ -55,7 +55,7 @@ class SteamController extends Controller
         if (!$gId) {
             return response()->json([
                 "message" => "Provide game ID parameter",
-                "data" => null
+                "data" => []
             ]);
         }
 
@@ -64,18 +64,19 @@ class SteamController extends Controller
         $response = Http::get($url);
 
         if ($response->successful()) {
-            $game = $response->json()[$gId]['data'] ?? null;
+            $game = $response->json()[$gId]['data'];
 
             if ($game) {
                 
                 $data = [
-                    "id" => $game['steam_appid'] ?? null,
-                    "name" => $game['name'] ?? null,
-                    "header" => $game['header_image'] ?? null,
-                    "about_game" => $game['short_description'] ?? null,
-                    "description" => $game['about_the_game'] ?? null,
-                    "price" => $game['price_overview']['final'] ?? null,
-                    "screenshot" => $game['screenshots'][0]['path_full'] ?? null
+                    "id" => $game['steam_appid'],
+                    "name" => $game['name'],
+                    "header_img" => $game['header_image'],
+                    "short_desc" => $game['short_description'],
+                    "description" => $game['about_the_game'],
+                    "publisher" => $game['publishers'],
+                    "price" => $game['price_overview']['final'] ?? 'free',
+                    "screenshot" => $game['screenshots'][0]['path_full']
                 ];
 
                 return response()->json([
@@ -85,13 +86,11 @@ class SteamController extends Controller
             } else {
                 return response()->json([
                     "message" => "Game not found",
-                    "data" => null
                 ]);
             }
         } else {
             return response()->json([
                 "message" => "Failed to fetch data from Steam API",
-                "data" => null
             ]);
         }
     }
