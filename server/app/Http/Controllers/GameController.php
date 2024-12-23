@@ -24,11 +24,13 @@ class GameController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'publisher' => 'required|string',
-            'image' => 'required|string',
-            'price' => 'required|decimal:,8,2',
+            'name'=>'required|string',
+            'short_description'=>'required|string',
+            'description'=>'required|string',
+            'publisher'=>'required|string',
+            'price'=>'required|decimal:,8,2',
+            'header_img' => 'required|string',
+            'image' => 'required|string'
         ]);
 
         $game = Games::create($request->all());
@@ -50,11 +52,13 @@ class GameController extends Controller
     public function update(Request $request, Games $game)
     {
         $request->validate([
-            'name' => 'string',
-            'description' => 'string',
-            'publisher' => 'string',
-            'image' => 'string',
-            'price' => 'decimal:,8,2',
+            'name'=>'required|string',
+            'short_description'=>'required|string',
+            'description'=>'required|string',
+            'publisher'=>'required|string',
+            'price'=>'required|decimal:,8,2',
+            'header_img' => 'required|string',
+            'image' => 'required|string'
         ]);
 
         $game->update($request->all());
