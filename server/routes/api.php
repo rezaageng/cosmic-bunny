@@ -41,5 +41,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Cart Routes
     Route::apiResource('/carts', CartController::class);
 
-    Route::apiResource('/steam-games', SteamController::class)->only(['index', 'show']);
+    // Steam Routes
+    Route::get('/steam-games', [SteamController::class, 'index']);
+    Route::get('/steam-games/{id}', [SteamController::class, 'show']);
 });

@@ -23,7 +23,7 @@ class SteamController extends Controller
             );
         }
 
-        // URL API Steam dengan parameter input 
+        // URL API Steam dengan parameter input
         $url = "https://store.steampowered.com/api/storesearch/?term={$term}&l=english&cc=ID";
 
         //request ke API Steam
@@ -34,7 +34,7 @@ class SteamController extends Controller
                 return [
                     "id" => $game['id'],          // Access the value using array notation
                     "name" => $game['name'],      // Access the value using array notation
-                    "image" => $game['tiny_image'],// Access the value using array notation
+                    "image" => $game['tiny_image'], // Access the value using array notation
                 ];
             });
 
@@ -47,27 +47,22 @@ class SteamController extends Controller
         }
     }
 
-    public function show(Request $request)
+    public function show(int $gId)
     {
-       //input 
-        $gId = $request->input('id');
-
-        if (!$gId) {
-            return response()->json([
-                "message" => "Provide game ID parameter",
-                "data" => []
-            ]);
-        }
+        Log::debug($gId);
 
         $url = "https://store.steampowered.com/api/appdetails?appids={$gId}&l=english&cc=ID";
 
         $response = Http::get($url);
 
-        if ($response->successful()) {
-            $game = $response->json()[$gId]['data'];
 
-            if ($game) {
-                
+        if ($response->successful()) {
+            $responseJson = $response->json()[$gId];
+            $status = $responseJson['success'];
+
+            if ($status) {
+                $game = $responseJson['data'];
+
                 $data = [
                     "id" => $game['steam_appid'],
                     "name" => $game['name'],
