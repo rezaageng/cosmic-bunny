@@ -22,8 +22,9 @@ import { logout } from '@/lib/actions';
 import { cn, detectOS, type OS } from '@/lib/utils';
 import { type GamesResponse } from '@/schemas/games';
 import { getGames } from '@/services';
+import { type NavbarProps } from '@/components/navbar';
 
-export function NavbarActions(): ReactElement {
+export function NavbarActions({ variant }: NavbarProps): ReactElement {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [os, setOs] = useState<OS>('Unknown');
@@ -78,43 +79,54 @@ export function NavbarActions(): ReactElement {
 
   return (
     <div className="relative flex items-center gap-4 sm:gap-6">
-      <button
-        onClick={() => {
-          setIsSearchOpen((prev) => !prev);
-        }}
-        type="button"
-        className="flex items-center gap-2 rounded-2xl border-gray-500 sm:border sm:px-4 sm:py-2 sm:text-gray-500"
-      >
-        <Search />
-        <div className="hidden items-center gap-1 sm:flex">
-          <span>{os === 'MacOS' ? <Command size={16} /> : 'Ctrl'}</span>
-          <span>+ K</span>
-        </div>
-      </button>
-      <Link href="/library">
-        <LibraryBig
-          className={cn('text-white hover:animate-pulse hover:text-blue-400', {
-            'text-blue-400': pathname === '/library',
-          })}
-        />
-      </Link>
-      <Link href="/wishlist">
-        <Star
-          className={cn(
-            'text-white hover:animate-pulse hover:text-yellow-500',
-            {
-              'text-yellow-400': pathname === '/wishlist',
-            },
-          )}
-        />
-      </Link>
-      <Link href="/cart">
-        <ShoppingCart
-          className={cn('text-white hover:animate-pulse hover:text-teal-400', {
-            'text-teal-400': pathname === '/cart',
-          })}
-        />
-      </Link>
+      {variant === 'main' ? (
+        <>
+          <button
+            onClick={() => {
+              setIsSearchOpen((prev) => !prev);
+            }}
+            type="button"
+            className="flex items-center gap-2 rounded-2xl border-gray-500 sm:border sm:px-4 sm:py-2 sm:text-gray-500"
+          >
+            <Search />
+            <div className="hidden items-center gap-1 sm:flex">
+              <span>{os === 'MacOS' ? <Command size={16} /> : 'Ctrl'}</span>
+              <span>+ K</span>
+            </div>
+          </button>
+          <Link href="/library">
+            <LibraryBig
+              className={cn(
+                'text-white hover:animate-pulse hover:text-blue-400',
+                {
+                  'text-blue-400': pathname === '/library',
+                },
+              )}
+            />
+          </Link>
+          <Link href="/wishlist">
+            <Star
+              className={cn(
+                'text-white hover:animate-pulse hover:text-yellow-500',
+                {
+                  'text-yellow-400': pathname === '/wishlist',
+                },
+              )}
+            />
+          </Link>
+          <Link href="/cart">
+            <ShoppingCart
+              className={cn(
+                'text-white hover:animate-pulse hover:text-teal-400',
+                {
+                  'text-teal-400': pathname === '/cart',
+                },
+              )}
+            />
+          </Link>
+        </>
+      ) : null}
+
       <button
         onClick={() => {
           setIsDropdownOpen((prev) => !prev);
