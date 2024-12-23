@@ -52,6 +52,9 @@ export function GameList({ title, games }: GameListProps): ReactElement {
     window.addEventListener('resize', () => {
       updateItemWidth();
       setCurrPos(0);
+
+      if (!scope.current) return;
+
       void animate(scope.current, {
         x: 0,
       });
@@ -128,13 +131,18 @@ export function GameList({ title, games }: GameListProps): ReactElement {
       </div>
       <div ref={wrapperRef} className="w-full overflow-clip">
         <div ref={scope} className="flex gap-4">
-          {games.map((game) => (
-            <GameCard
-              key={`new-release-${game.id.toString()}`}
-              game={game}
-              width={itemWidth}
-            />
-          ))}
+          {games.length !== 0
+            ? games.map((game) => (
+                <GameCard
+                  key={`new-release-${game.id.toString()}`}
+                  gameId={game.id}
+                  image={game.image}
+                  name={game.name}
+                  price={game.price}
+                  width={itemWidth}
+                />
+              ))
+            : null}
         </div>
       </div>
     </div>

@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $user = $request->user();
 
         if ($user->role === 'user') {
@@ -17,22 +18,31 @@ class CartController extends Controller
         }
 
         $data = $cart->map(function ($cart) {
-            return $cart->game;
+            return [
+                'id' => $cart->id,
+                'game' => [
+                    'id' => $cart->game->id,
+                    'name' => $cart->game->name,
+                    'image' => $cart->game->image,
+                    'price' => $cart->game->price,
+                ],
+            ];
         });
 
         $amount = $cart->sum(function ($cart) {
             return $cart->game->price;
-        } );
+        });
 
         return response()->json([
             'data' => [
-                'games' => $data,
+                'items' => $data,
                 'amount' => $amount,
             ]
         ]);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'game_id' => 'required|exists:games,id',
@@ -58,11 +68,12 @@ class CartController extends Controller
     }
 
 
-    public function destroy(Cart $cart){
+    public function destroy(Cart $cart)
+    {
         $cart->delete();
 
         return response()->json([
-            'message'=>'Cart Deleted'
+            'message' => 'Cart Deleted'
         ]);
     }
 }

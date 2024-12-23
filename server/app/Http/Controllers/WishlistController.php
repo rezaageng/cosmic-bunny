@@ -19,7 +19,15 @@ class WishlistController extends Controller
         }
 
         $data = $wishlist->map(function ($wishlist) {
-            return $wishlist->game;
+            return [
+                'id' => $wishlist->id,
+                'game' => [
+                    'id' => $wishlist->game->id,
+                    'name' => $wishlist->game->name,
+                    'image' => $wishlist->game->image,
+                    'price' => $wishlist->game->price,
+                ],
+            ];
         });
 
         return response()->json([
@@ -54,14 +62,13 @@ class WishlistController extends Controller
         ]);
     }
 
-   
-    public function destroy(Wishlist $wishlist){
+
+    public function destroy(Wishlist $wishlist)
+    {
         $wishlist->delete();
 
         return response()->json([
-            'message'=>'wishlist Deleted'
+            'message' => 'wishlist Deleted'
         ]);
     }
-
-    
 }

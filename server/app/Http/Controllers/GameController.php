@@ -7,28 +7,27 @@ use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
-    public function index(Request $request){
-        $game= Games::query();
+    public function index(Request $request)
+    {
+        $game = Games::query();
 
-        if($request->has('search')){
-            $game->where('name','like',"%" . $request->search . "%");
+        if ($request->has('search')) {
+            $game->where('name', 'like', "%" . $request->search . "%");
         }
         $game = $game->get();
 
         return response()->json([
-            'messages'=>'list of games',
-            'data'=> $game
+            'messages' => 'list of games',
+            'data' => $game
         ]);
     }
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'name'=>'required|string',
             'short_description'=>'required|string',
             'description'=>'required|string',
             'publisher'=>'required|string',
-            'imagg' => [
-                'string',
-            ],
             'price'=>'required|decimal:,8,2',
             'header_img' => 'required|string',
             'image' => 'required|string'
@@ -37,27 +36,26 @@ class GameController extends Controller
         $game = Games::create($request->all());
 
         return response()->json([
-            'message'=>'Games created succesfully',
-            'data'=>$game,
+            'message' => 'Games created succesfully',
+            'data' => $game,
         ]);
     }
 
-    public function show(Games $game){
+    public function show(Games $game)
+    {
         return response()->json([
-            'messages'=>'game details',
-            'data'=> $game
+            'messages' => 'game details',
+            'data' => $game
         ]);
     }
 
-    public function update(Request $request, Games $game){
+    public function update(Request $request, Games $game)
+    {
         $request->validate([
             'name'=>'required|string',
             'short_description'=>'required|string',
             'description'=>'required|string',
             'publisher'=>'required|string',
-            'image' => [
-                'string',
-            ],
             'price'=>'required|decimal:,8,2',
             'header_img' => 'required|string',
             'image' => 'required|string'
@@ -66,12 +64,13 @@ class GameController extends Controller
         $game->update($request->all());
 
         return response()->json([
-            'message'=>'Game Update Succes',
-            'data'=> $game,
+            'message' => 'Game Update Succes',
+            'data' => $game,
         ]);
     }
 
-    public function destroy(Games $game){
+    public function destroy(Games $game)
+    {
         $game->delete();
 
         return response()->json([
