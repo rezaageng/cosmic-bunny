@@ -125,6 +125,9 @@ export const login = async (
   ) {
     cookies().set('token', responseParsed.data.data.token);
 
+    if (responseParsed.data.data.user.role === 'admin') {
+      redirect('/dashboard');
+    }
     redirect('/');
   }
 
