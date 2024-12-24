@@ -1,14 +1,15 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Middleware\CheckRole;
 
 // Authentication Routes
 Route::prefix('auth')->group(function () {
@@ -44,4 +45,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Steam Routes
     Route::get('/steam-games', [SteamController::class, 'index']);
     Route::get('/steam-games/{id}', [SteamController::class, 'show']);
+
+    // Order Routes
+    Route::apiResource('/orders', OrderController::class);
 });
