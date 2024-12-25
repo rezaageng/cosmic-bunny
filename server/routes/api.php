@@ -1,14 +1,15 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Middleware\CheckRole;
 
 // Authentication Routes
 Route::prefix('auth')->group(function () {
@@ -25,7 +26,15 @@ Route::apiResource('/games', GameController::class)->except(['store', 'update', 
 
 // Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
-    // Game Routes
+    
+    //user
+    Route::get('/users', [UserController::class, 'index']); // List all users
+    Route::get('/users/{user}', [UserController::class, 'show']); 
+    Route::put('/users/{user}', [UserController::class, 'update']); 
+    Route::delete('/users/{user}', [UserController::class, 'destroy']); 
+    
+    
+    // Game Routes (admin)
     Route::middleware([CheckRole::class])->group(function () {
         Route::post('/games', [GameController::class, 'store']);
         Route::put('/games/{game}', [GameController::class, 'update']);
