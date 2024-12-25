@@ -8,8 +8,7 @@ class Order extends Model
 {
     protected $table='orders';
     protected $fillable = [
-        'user_id',
-        'game_id'
+        'user_id'
     ];
 
     //relasi ke user
@@ -18,7 +17,7 @@ class Order extends Model
     }
 
     //relasi ke game
-    public function game(){
-        return $this->belongsTo(Games::class);
+    public function games(){
+        return $this->hasMany(Games::class);
     }
 }

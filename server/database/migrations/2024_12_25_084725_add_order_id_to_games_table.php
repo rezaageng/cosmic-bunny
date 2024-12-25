@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-
-            $table->timestamps();
+        Schema::table('games', function (Blueprint $table) {
+            $table->foreignId('order_id')->nullable()->constrained()->onDelete('cascade'); // Menambahkan kolom order_id
         });
     }
 
@@ -25,6 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::table('games', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
+            $table->dropColumn('order_id');
+        });
     }
 };

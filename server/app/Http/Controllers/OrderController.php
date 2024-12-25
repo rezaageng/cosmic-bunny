@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Games;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -11,24 +12,37 @@ class OrderController extends Controller
     {
         $user = $request->user();
         
-        if($user->role === 'user'){
-            $order = Order::where('user_id', $user->id)->get();
-        }else{
-                $order = Order::all();
+        if ($user->role === 'admin') {
+            // Ambil user_id dari parameter request
+            $userId = $request->query('user_id');
+    
+            // Jika user_id diberikan, ambil order berdasarkan user_id
+            if ($userId) {
+                $orders = Order::where('user_id', $userId)->with('games')->get();
+            } else {
+                // Jika tidak ada user_id, ambil semua order
+                $orders = Order::with('games')->get();
+            }
+        } else {
+            // Jika pengguna adalah user biasa, ambil order berdasarkan user_id
+            $orders = Order::where('user_id', $user->id)->with('games')->get();
         }
-
-        $data = $order->map(function($order){
+    
+        // Memformat data untuk respons
+        $data = $orders->map(function ($order) {
             return [
                 'id' => $order->id,
-                'game' => [
-                    'id' => $order->game->id,
-                    'name' => $order->game->name,
-                    'image' => $order->game->image,
-                    'price' => $order->game->price,
-                ],
+                'games' => $order->games->map(function ($game) {
+                    return [
+                        'id' => $game->id,
+                        'name' => $game->name,
+                        'image' => $game->image,
+                        'price' => $game->price,
+                    ];
+                }),
             ];
         });
-
+        
         return response()->json([
             'data' => $data,
         ]);
@@ -38,25 +52,23 @@ class OrderController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'game_id' => 'required|exists:games,id',
+            'game_ids' => 'required|array', // Mengubah dari game_id menjadi game_ids
+            'game_ids.*' => 'exists:games,id', // Validasi setiap game_id
         ]);
-
-        //cek ad game yg sama g di order
-        $existingOrder = Order::where('user_id', $request->user_id)
-            ->where('game_id', $request->game_id)
-            ->first();
-
-        if($existingOrder){
-            return response()->json([
-                'message' => 'Game already added in Order',
-            ]);
+    
+        // Membuat order baru
+        $order = Order::create(['user_id' => $request->user_id]);
+    
+        // Menambahkan game ke order
+        foreach ($request->game_ids as $gameId) {
+            $game = Games::find($gameId);
+            $game->order_id = $order->id; // Mengaitkan game dengan order
+            $game->save();
         }
-
-        $order = Order::create($request->all());
-
+    
         return response()->json([
             'message' => 'Order created successfully',
-            'data' => $order,
+            'data' => $order->load('games'), // Memuat relasi games
         ]);
     }
 
