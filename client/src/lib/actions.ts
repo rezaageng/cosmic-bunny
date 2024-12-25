@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import {
   LoginSchema,
   type RegisterResponse,
@@ -9,6 +10,8 @@ import {
   RegisterSchema,
   type RegisterSchemaType,
 } from '@/schemas/auth';
+import { getCurrentUser } from '@/services';
+import { GameUserBodySchema } from '@/schemas/global';
 
 export const register = async (
   _prevState: unknown,
@@ -122,6 +125,9 @@ export const login = async (
   ) {
     cookies().set('token', responseParsed.data.data.token);
 
+    if (responseParsed.data.data.user.role === 'admin') {
+      redirect('/dashboard');
+    }
     redirect('/');
   }
 
@@ -142,4 +148,151 @@ export const logout = async (): Promise<void> => {
 
   cookies().delete('token');
   redirect('/login');
+};
+
+export const addToWishlist = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  const body = GameUserBodySchema.safeParse({
+    gameId: id,
+    userId: user.data.id,
+  });
+
+  if (!body.success) {
+    throw new Error('Failed to parse wishlist body');
+  }
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlists`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      game_id: body.data.gameId,
+      user_id: body.data.userId,
+    }),
+  });
+
+  revalidatePath('/wishlist');
+};
+
+export const deleteFromWishlist = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/wishlists/${id.toString()}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  revalidatePath('/wishlist');
+};
+
+export const addToLibrary = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  const body = GameUserBodySchema.safeParse({
+    gameId: id,
+    userId: user.data.id,
+  });
+
+  if (!body.success) {
+    throw new Error('Failed to parse wishlist body');
+  }
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/libraries`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      game_id: body.data.gameId,
+      user_id: body.data.userId,
+    }),
+  });
+
+  revalidatePath('/library');
+};
+
+export const addToCart = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  const body = GameUserBodySchema.safeParse({
+    gameId: id,
+    userId: user.data.id,
+  });
+
+  if (!body.success) {
+    throw new Error('Failed to parse wishlist body');
+  }
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      game_id: body.data.gameId,
+      user_id: body.data.userId,
+    }),
+  });
+
+  revalidatePath('/cart');
+};
+
+export const deleteFromCart = async (id: number): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/carts/${id.toString()}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  revalidatePath('/cart');
 };

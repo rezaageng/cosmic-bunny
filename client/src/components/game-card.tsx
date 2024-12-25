@@ -1,31 +1,40 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactElement } from 'react';
-import type { GamesResponse } from '@/schemas/games';
+import { formatCurrency } from '@/lib/utils';
 
 interface GameCardProps {
-  game: GamesResponse['data'][0];
+  gameId: number;
+  name: string;
+  image: string;
+  price?: number;
   width?: number;
 }
 
-export function GameCard({ game, width }: GameCardProps): ReactElement {
+export function GameCard({
+  gameId,
+  image,
+  name,
+  price,
+  width,
+}: GameCardProps): ReactElement {
   return (
-    <Link href={`/game/${game.id.toString()}`} className="group space-y-2">
+    <Link href={`/game/${gameId.toString()}`} className="group space-y-2">
       <div
         style={{ width }}
-        className="relative aspect-[3/2] flex-shrink-0 overflow-clip rounded-2xl"
+        className="relative aspect-[2] flex-shrink-0 overflow-clip rounded-lg"
       >
         <Image
-          src="/images/placeholder.png"
-          alt={game.name}
+          src={image}
+          alt={name}
           fill
           className="object-cover group-hover:brightness-125"
         />
       </div>
       <h3 className="line-clamp-2 font-semibold text-gray-100 sm:text-lg">
-        {game.name}
+        {name}
       </h3>
-      <span className="block">IDR {game.price}</span>
+      {price ? <span className="block">{formatCurrency(price)}</span> : null}
     </Link>
   );
 }
