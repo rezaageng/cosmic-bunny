@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\WishlistController;
@@ -26,11 +27,17 @@ Route::apiResource('/games', GameController::class)->except(['store', 'update', 
 
 // Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
-    // Game Routes
+    // Game Routes (admin)
     Route::middleware([CheckRole::class])->group(function () {
         Route::post('/games', [GameController::class, 'store']);
         Route::put('/games/{game}', [GameController::class, 'update']);
         Route::delete('/games/{game}', [GameController::class, 'destroy']);
+      
+        //user
+        Route::get('/users', [UserController::class, 'index']); // List all users
+        Route::get('/users/{user}', [UserController::class, 'show']); 
+        Route::put('/users/{user}', [UserController::class, 'update']); 
+        Route::delete('/users/{user}', [UserController::class, 'destroy']); 
     });
 
     // Library Routes
