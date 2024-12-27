@@ -27,7 +27,7 @@ export default async function GamePage({
         <div>
           <div className="space-y-2 text-center sm:sticky sm:top-4">
             <Image
-              src={data.image}
+              src={data.header_img}
               alt={data.name}
               width={460}
               height={215}
@@ -41,17 +41,13 @@ export default async function GamePage({
         </div>
         <div className="w-full space-y-4 sm:w-[70%]">
           <Image
-            src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2161700/ss_7017244fb8319ba927a0ef414959b95a6164356f.1920x1080.jpg?t=1725556209"
+            src={data.image}
             width={1920}
             height={1080}
             alt={data.name}
             className="aspect-video w-full rounded"
           />
-          <p>
-            Dive into the Dark Hour and awaken the depths of your heart. Persona
-            3 Reload is a captivating reimagining of the genre-defining RPG,
-            reborn for the modern era with cutting-edge graphics and gameplay.
-          </p>
+          <p>{data.short_description}</p>
           <GameDescription description={data.description} />
         </div>
       </div>

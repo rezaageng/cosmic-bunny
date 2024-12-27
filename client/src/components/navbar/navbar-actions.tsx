@@ -215,7 +215,7 @@ function SearchModal({
 
   return (
     <div className="fixed left-0 top-32 z-50 w-screen max-w-2xl translate-x-0 p-4 sm:left-1/2 sm:m-0 sm:-translate-x-1/2">
-      <div className="rounded-2xl border border-white/25 bg-background">
+      <div className="overflow-clip rounded-2xl border border-white/25 bg-background">
         <div className="flex gap-2 p-4">
           <Search />
           <input
@@ -239,7 +239,7 @@ function SearchModal({
                   className="flex items-center gap-2 p-4 hover:bg-gray-500"
                 >
                   <Image
-                    src={game.image}
+                    src={game.header_img}
                     alt="cover"
                     width={80}
                     height={40}
