@@ -24,7 +24,7 @@ class WishlistController extends Controller
                 'game' => [
                     'id' => $wishlist->game->id,
                     'name' => $wishlist->game->name,
-                    'image' => $wishlist->game->image,
+                    'image' => $wishlist->game->header_img,
                     'price' => $wishlist->game->price,
                 ],
             ];
