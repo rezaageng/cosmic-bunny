@@ -8,7 +8,8 @@ class Order extends Model
 {
     protected $table='orders';
     protected $fillable = [
-        'user_id'
+        'user_id',
+        'status'
     ];
 
     //relasi ke user

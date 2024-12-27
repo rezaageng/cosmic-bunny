@@ -52,12 +52,16 @@ class OrderController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
+            'status' => 'required|in:pending,succeed,failed',
             'game_ids' => 'required|array', // Mengubah dari game_id menjadi game_ids
             'game_ids.*' => 'exists:games,id', // Validasi setiap game_id
         ]);
     
         // Membuat order baru
-        $order = Order::create(['user_id' => $request->user_id]);
+        $order = Order::create([
+            'user_id' => $request->user_id,
+            'status' => $request->status,
+        ]);
     
         // Menambahkan game ke order
         foreach ($request->game_ids as $gameId) {
