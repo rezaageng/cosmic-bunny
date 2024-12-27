@@ -23,7 +23,7 @@ class CartController extends Controller
                 'game' => [
                     'id' => $cart->game->id,
                     'name' => $cart->game->name,
-                    'image' => $cart->game->image,
+                    'image' => $cart->game->header_img,
                     'price' => $cart->game->price,
                 ],
             ];

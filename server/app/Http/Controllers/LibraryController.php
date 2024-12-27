@@ -23,7 +23,7 @@ class LibraryController extends Controller
                 'game' => [
                     'id' => $library->game->id,
                     'name' => $library->game->name,
-                    'image' => $library->game->image,
+                    'image' => $library->game->header_img,
                 ],
             ];
         });

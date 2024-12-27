@@ -136,7 +136,7 @@ export function GameList({ title, games }: GameListProps): ReactElement {
                 <GameCard
                   key={`new-release-${game.id.toString()}`}
                   gameId={game.id}
-                  image={game.image}
+                  image={game.header_img}
                   name={game.name}
                   price={game.price}
                   width={itemWidth}
