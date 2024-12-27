@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import { Modal } from '@/components/modal';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -20,7 +21,10 @@ export default function RootLayout({
 }>): JSX.Element {
   return (
     <html lang="en " className={`${geistSans.variable} antialiased`}>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        {children}
+        <Modal />
+      </body>
     </html>
   );
 }

@@ -59,6 +59,7 @@ export const getGames = async ({
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      next: { tags: ['games'] },
     },
   );
 
