@@ -55,4 +55,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Order Routes
     Route::apiResource('/orders', OrderController::class);
+    Route::put('/orders/{orderId}', [OrderController::class, 'update']);
+
 });

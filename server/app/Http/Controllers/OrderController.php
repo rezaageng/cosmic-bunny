@@ -11,27 +11,27 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
-        if ($user->role === 'admin') {
-            // Ambil user_id dari parameter request
-            $userId = $request->query('user_id');
-    
-            // Jika user_id diberikan, ambil order berdasarkan user_id
-            if ($userId) {
-                $orders = Order::where('user_id', $userId)->with('games')->get();
-            } else {
-                // Jika tidak ada user_id, ambil semua order
-                $orders = Order::with('games')->get();
-            }
-        } else {
-            // Jika pengguna adalah user biasa, ambil order berdasarkan user_id
+
+        if ($user->role === 'user') {
+            // Hanya mengambil data orders berdasarkan user_id pengguna aktif
             $orders = Order::where('user_id', $user->id)->with('games')->get();
+        } else {
+            // Mengambil semua data orders tanpa filter user_id
+            $orders = Order::with('games')->get();
         }
-    
-        // Memformat data untuk respons
+
         $data = $orders->map(function ($order) {
+            // Hitung total amount dari game terkait di sini
+            $totalAmount = $order->games->sum('price');
             return [
                 'id' => $order->id,
+                'status' => $order->status,
+                'amount' => $totalAmount, // Gunakan total harga dari game
+                'user' => [
+                    'id' => $order->user->id,
+                    'name' => $order->user->name,
+                    'email' => $order->user->email,
+                ],
                 'games' => $order->games->map(function ($game) {
                     return [
                         'id' => $game->id,
@@ -42,7 +42,7 @@ class OrderController extends Controller
                 }),
             ];
         });
-        
+
         return response()->json([
             'data' => $data,
         ]);
@@ -53,8 +53,8 @@ class OrderController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'status' => 'required|in:pending,succeed,failed',
-            'game_ids' => 'required|array', // Mengubah dari game_id menjadi game_ids
-            'game_ids.*' => 'exists:games,id', // Validasi setiap game_id
+            'game_ids' => 'required|array',
+            'game_ids.*' => 'exists:games,id',
         ]);
     
         // Membuat order baru
@@ -66,23 +66,75 @@ class OrderController extends Controller
         // Menambahkan game ke order
         foreach ($request->game_ids as $gameId) {
             $game = Games::find($gameId);
-            $game->order_id = $order->id; // Mengaitkan game dengan order
+            $game->order_id = $order->id;
             $game->save();
         }
-    
+        
+        $orderData = $order->load('games');
+
+        $orderData->games->each(function ($game) {
+            $game->makeHidden(['order_id']);
+        });
+
         return response()->json([
             'message' => 'Order created successfully',
-            'data' => $order->load('games'), // Memuat relasi games
+            'data' => $orderData,
+        ]);
+    }
+
+    public function update(Request $request, $orderId)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'game_ids' => 'required|array',
+            'game_ids.*' => 'exists:games,id',
+        ]);
+
+        $order = Order::findOrFail($orderId);
+
+        //user cmn bisa update milik sndiri
+        if ($user->role === 'user' && $order->user_id !== $user->id) {
+            return response()->json(['message' => 'You are not authorized to update this order.']);
+        }
+
+        $currentGameIds = $order->games->pluck('id')->toArray();
+
+        $newGameIds = $request->game_ids;
+
+        //hpus game dri order
+        $removedGameIds = array_diff($currentGameIds, $newGameIds);
+
+        if (count($removedGameIds) > 0) {
+            $order->games()->whereIn('id', $removedGameIds)->update(['order_id' => null]);
+        }
+
+        foreach ($newGameIds as $gameId) {
+
+            $game = Games::find($gameId);
+            if ($game && $game->order_id !== $order->id) {
+                $game->order_id = $order->id;  // Set order_id
+                $game->save();
+            }
+        }
+
+        $orderData = $order->load('games');
+
+        $orderData->games->each(function ($game) {
+            $game->makeHidden(['order_id']);
+        });
+
+        return response()->json([
+            'message' => 'Order updated successfully',
+            'data' => $orderData,
         ]);
     }
 
     public function destroy(Order $order)
     {
         $order->delete();
-
         return response()->json([
             'message' => 'order Deleted'
         ]);
     }
-
 }
