@@ -20,8 +20,8 @@ class Games extends Model
         'price' => 'float',
     ];
 
-    public function order()
+    public function orders()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'game_order', 'order_id', 'game_id');
     }
 }
