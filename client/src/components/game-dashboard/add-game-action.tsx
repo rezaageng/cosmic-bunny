@@ -18,7 +18,7 @@ export function AddGameAction(): JSX.Element {
   useEffect(() => {
     if (pending) {
       setIsOpen(true);
-      setMessage('Adding game...');
+      setMessage('Processing Your Request...');
       setVariant('loading');
     } else {
       setIsOpen(false);

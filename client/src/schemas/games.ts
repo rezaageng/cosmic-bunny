@@ -52,6 +52,7 @@ export const GameResponseSchema = z.object({
 export type GameResponse = z.infer<typeof GameResponseSchema>;
 
 export const GameBodySchema = z.object({
+  id: z.number().optional(),
   name: z.string().min(1, { message: 'Name is required' }),
   description: z.string().min(1, { message: 'Description is required' }),
   short_description: z

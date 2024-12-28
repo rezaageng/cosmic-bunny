@@ -91,6 +91,7 @@ export const getGame = async (id: string): Promise<GameResponse> => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      next: { tags: ['games'] },
     },
   );
 
