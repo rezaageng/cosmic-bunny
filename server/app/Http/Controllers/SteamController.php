@@ -70,7 +70,7 @@ class SteamController extends Controller
                     "short_description" => $game['short_description'],
                     "description" => $game['about_the_game'],
                     "publisher" => $game['publishers'],
-                    "price" => $game['price_overview']['final'] ?? 'free',
+                    "price" => $game['price_overview']['final'] ?? 0,
                     "screenshot" => $game['screenshots'][0]['path_full']
                 ];
 
