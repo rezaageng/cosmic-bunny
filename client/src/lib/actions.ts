@@ -12,6 +12,11 @@ import {
 } from '@/schemas/auth';
 import { getCurrentUser } from '@/services';
 import { GameUserBodySchema } from '@/schemas/global';
+import {
+  GameBodySchema,
+  type GameResponse,
+  GameResponseSchema,
+} from '@/schemas/games';
 
 export const register = async (
   _prevState: unknown,
@@ -316,4 +321,60 @@ export const deleteGames = async (id: number): Promise<void> => {
   });
 
   revalidateTag('games');
+};
+
+export const addGame = async (
+  _prevState: unknown,
+  formData: FormData,
+): Promise<GameResponse> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  if (!token) {
+    redirect('/login');
+  }
+
+  const data = {
+    name: formData.get('name') as string,
+    publisher: formData.get('publisher') as string,
+    price: Number(formData.get('price')),
+    short_description: formData.get('short-description') as string,
+    description: formData.get('description') as string,
+    header_img: formData.get('header-img') as string,
+    image: formData.get('image') as string,
+  };
+
+  const parsed = GameBodySchema.safeParse(data);
+
+  if (!parsed.success) {
+    const errors = parsed.error.flatten().fieldErrors;
+    return {
+      message: 'Validation failed',
+      data: null,
+      errors: {
+        name: errors.name,
+        publisher: errors.publisher,
+        price: errors.price,
+        short_description: errors.short_description,
+        description: errors.description,
+        header_img: errors.header_img,
+        image: errors.image,
+      },
+    };
+  }
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/games`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(parsed.data),
+  });
+
+  const responseParsed = GameResponseSchema.safeParse(await response.json());
+
+  revalidateTag('games');
+
+  return responseParsed.data ?? { message: 'An error occurred', data: null };
 };

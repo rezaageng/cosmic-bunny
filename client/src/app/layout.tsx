@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { Modal } from '@/components/modal';
+import { Toast } from '@/components/toast';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en " className={`${geistSans.variable} antialiased`}>
       <body className="font-sans">
         {children}
+        <Toast />
         <Modal />
       </body>
     </html>

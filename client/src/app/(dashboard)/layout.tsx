@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <>
       <Navbar variant="dashboard" />
-      <main className="relative flex min-h-[calc(100svh-80px)] flex-col-reverse sm:flex-row">
+      <main className="relative flex min-h-[calc(100svh-81px)] flex-col-reverse sm:flex-row">
         <DashboardNav />
         <div className="mx-auto w-full max-w-screen-2xl flex-1">{children}</div>
       </main>

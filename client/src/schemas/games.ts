@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const GamesResponseSchema = z.object({
-  messages: z.string(),
+  message: z.string(),
   data: z.array(
     z.object({
       id: z.number(),
@@ -21,7 +21,7 @@ export const GamesResponseSchema = z.object({
 export type GamesResponse = z.infer<typeof GamesResponseSchema>;
 
 export const GameResponseSchema = z.object({
-  messages: z.string(),
+  message: z.string(),
   data: z
     .object({
       id: z.number(),
@@ -36,6 +36,31 @@ export const GameResponseSchema = z.object({
       updated_at: z.string(),
     })
     .nullable(),
+  errors: z
+    .object({
+      name: z.array(z.string()).optional(),
+      description: z.array(z.string()).optional(),
+      short_description: z.array(z.string()).optional(),
+      publisher: z.array(z.string()).optional(),
+      price: z.array(z.string()).optional(),
+      image: z.array(z.string()).optional(),
+      header_img: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 export type GameResponse = z.infer<typeof GameResponseSchema>;
+
+export const GameBodySchema = z.object({
+  name: z.string().min(1, { message: 'Name is required' }),
+  description: z.string().min(1, { message: 'Description is required' }),
+  short_description: z
+    .string()
+    .min(1, { message: 'Short description is required' }),
+  publisher: z.string().min(1, { message: 'Publisher is required' }),
+  price: z.number().max(9999999, { message: 'Max price is 9999999' }).min(0),
+  image: z.string().min(1, { message: 'Image is required' }),
+  header_img: z.string().min(1, { message: 'Header image is required' }),
+});
+
+export type GameBody = z.infer<typeof GameBodySchema>;

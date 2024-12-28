@@ -8,6 +8,12 @@ import {
 } from '@/schemas/games';
 import { type LibraryResponse, LibraryResponseSchema } from '@/schemas/library';
 import {
+  type SteamGameResponse,
+  SteamGameResponseSchema,
+  type SteamGamesResponse,
+  SteamGamesResponseSchema,
+} from '@/schemas/steam-games';
+import {
   type WishlistResponse,
   WishlistResponseSchema,
 } from '@/schemas/wishlist';
@@ -90,7 +96,7 @@ export const getGame = async (id: string): Promise<GameResponse> => {
 
   if (response.status === 404) {
     const data = GameResponseSchema.safeParse({
-      messages: 'Game not found',
+      message: 'Game not found',
       data: null,
     });
 
@@ -189,6 +195,70 @@ export const getCart = async ({
   }
 
   const data = CartResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse games response');
+  }
+
+  return data.data;
+};
+
+export const getSteamGames = async ({
+  token,
+  search,
+}: {
+  token: string;
+  search?: string;
+}): Promise<SteamGamesResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/steam-games?search=${search ?? ''}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch games');
+  }
+
+  const data = SteamGamesResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse games response');
+  }
+
+  return data.data;
+};
+
+export const getSteamGame = async ({
+  id,
+  token,
+}: {
+  id: number;
+  token: string;
+}): Promise<SteamGameResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/steam-games/${id.toString()}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch games');
+  }
+
+  const data = SteamGameResponseSchema.safeParse(await response.json());
 
   if (!data.success) {
     throw new Error('Failed to parse games response');

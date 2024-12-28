@@ -20,14 +20,14 @@ export default async function GameDashboard({
         <div className="mb-6 flex items-center justify-between">
           <GameSearch />
           <Link
-            href="/dashboard/game/add"
+            href="/dashboard/games/add"
             className="flex items-center gap-2 text-sm font-semibold text-indigo-500"
           >
             <Plus /> <span>Add Game</span>
           </Link>
         </div>
         {data.length === 0 ? (
-          <div className="grid h-[calc(100svh-80px-32px)] w-full place-items-center">
+          <div className="grid h-[calc(100svh-81px-100px)] w-full place-items-center">
             <Rabbit size={256} className="w-full text-zinc-800" />
           </div>
         ) : (

@@ -10,7 +10,7 @@ export function DashboardNav(): ReactElement {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky bottom-0 flex w-full items-center justify-around border-t border-zinc-800 p-4 sm:w-auto sm:flex-col sm:justify-start sm:gap-8 sm:border-r sm:border-t-0">
+    <aside className="sticky bottom-0 flex w-full items-center justify-around border-t border-zinc-800 bg-background p-4 sm:w-auto sm:flex-col sm:justify-start sm:gap-8 sm:border-r sm:border-t-0">
       <Link
         href="/dashboard/games"
         className={cn('hover:animate-pulse hover:text-indigo-500', {
