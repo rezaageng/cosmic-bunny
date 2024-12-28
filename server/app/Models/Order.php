@@ -19,6 +19,6 @@ class Order extends Model
 
     //relasi ke game
     public function games(){
-        return $this->hasMany(Games::class);
+        return $this->belongsToMany(Games::class, 'game_order', 'order_id', 'game_id');
     }
 }
