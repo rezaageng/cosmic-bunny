@@ -50,7 +50,7 @@ export function TextInput({
     <input
       autoComplete="off"
       className={cn(
-        'rounded-xl bg-black px-4 py-2 text-white outline outline-gray-800 focus:outline-indigo-700',
+        'rounded-xl bg-background px-4 py-2 text-white outline outline-gray-800 focus:outline-indigo-700',
         className,
       )}
       {...props}
@@ -66,6 +66,21 @@ export function CheckBox({
     <input
       type="checkbox"
       className={cn('accent-indigo-700', className)}
+      {...props}
+    />
+  );
+}
+
+export function TextArea({
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLTextAreaElement>): ReactElement {
+  return (
+    <textarea
+      className={cn(
+        'h-32 rounded-xl bg-background px-4 py-2 text-white outline outline-gray-800 focus:outline-indigo-700',
+        className,
+      )}
       {...props}
     />
   );

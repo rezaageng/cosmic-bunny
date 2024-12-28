@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function Dashboard(): void {
+export default function EditRoot(): void {
   redirect('/dashboard/games');
 }

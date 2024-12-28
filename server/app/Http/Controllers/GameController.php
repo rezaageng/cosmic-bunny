@@ -17,7 +17,7 @@ class GameController extends Controller
         $game = $game->get();
 
         return response()->json([
-            'messages' => 'list of games',
+            'message' => 'list of games',
             'data' => $game
         ]);
     }
@@ -44,7 +44,7 @@ class GameController extends Controller
     public function show(Games $game)
     {
         return response()->json([
-            'messages' => 'game details',
+            'message' => 'game details',
             'data' => $game
         ]);
     }

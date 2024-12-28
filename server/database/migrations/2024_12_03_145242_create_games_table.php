@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('short_description');
+            $table->text('short_description');
             $table->text('description');
             $table->string('publisher');
-            $table->decimal('price');
+            $table->decimal('price', 9, 2);
             $table->string('header_img');
             $table->string('image');
             $table->timestamps();
