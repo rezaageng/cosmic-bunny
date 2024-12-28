@@ -1,5 +1,6 @@
 'use server';
 
+import { v2 as cloudinary } from 'cloudinary';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { revalidatePath, revalidateTag } from 'next/cache';
@@ -340,7 +341,9 @@ export const addGame = async (
     short_description: formData.get('short-description') as string,
     description: formData.get('description') as string,
     header_img: formData.get('header-img') as string,
+    header_img_local: formData.get('header-img-local') as string,
     image: formData.get('image') as string,
+    image_local: formData.get('image-local') as string,
   };
 
   const parsed = GameBodySchema.safeParse(data);
@@ -360,6 +363,36 @@ export const addGame = async (
         image: errors.image,
       },
     };
+  }
+
+  if (parsed.data.image_local && parsed.data.image_local.size !== 0) {
+    const file = parsed.data.image_local;
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
+
+    const response = await cloudinary.uploader.upload(base64, {
+      use_filename: true,
+    });
+
+    parsed.data.image = response.secure_url;
+  }
+
+  if (parsed.data.header_img_local && parsed.data.header_img_local.size !== 0) {
+    const file = parsed.data.header_img_local;
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const base64 = `data:${file.type};base64,${buffer.toString('base64')}`;
+
+    const response = await cloudinary.uploader.upload(base64, {
+      use_filename: true,
+    });
+
+    parsed.data.header_img = response.secure_url;
   }
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/games`, {

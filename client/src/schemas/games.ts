@@ -60,7 +60,9 @@ export const GameBodySchema = z.object({
   publisher: z.string().min(1, { message: 'Publisher is required' }),
   price: z.number().max(9999999, { message: 'Max price is 9999999' }).min(0),
   image: z.string().min(1, { message: 'Image is required' }),
+  image_local: z.instanceof(File).optional(),
   header_img: z.string().min(1, { message: 'Header image is required' }),
+  header_img_local: z.instanceof(File).optional(),
 });
 
 export type GameBody = z.infer<typeof GameBodySchema>;

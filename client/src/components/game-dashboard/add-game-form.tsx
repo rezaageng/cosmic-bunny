@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactElement } from 'react';
 import Image from 'next/image';
 import { useFormState } from 'react-dom';
 import { useShallow } from 'zustand/shallow';
+import { ImageUp } from 'lucide-react';
 import {
   ErrorMessage,
   InputGroup,
@@ -33,6 +34,10 @@ export function AddGameForm(): ReactElement {
 
   const [search, setSearch] = useState('');
   const [games, setGames] = useState<SteamGamesResponse['data']>([]);
+  const [localImage, setLocalImage] = useState({
+    header_img: '',
+    image: '',
+  });
   const [formValues, setFormValues] = useState<GameBody>({
     name: '',
     publisher: '',
@@ -95,6 +100,10 @@ export function AddGameForm(): ReactElement {
         header_img: '',
         image: '',
       });
+      setLocalImage({
+        header_img: '',
+        image: '',
+      });
       setToastOpen(true);
       setMessage(state.message);
     }
@@ -109,7 +118,10 @@ export function AddGameForm(): ReactElement {
             <TextInput
               onChange={(e) => {
                 setSearch(e.target.value);
-                setFormValues((prev) => ({ ...prev, name: e.target.value }));
+                setFormValues((prev) => ({
+                  ...prev,
+                  name: e.target.value,
+                }));
               }}
               value={formValues.name}
               id="name"
@@ -190,35 +202,107 @@ export function AddGameForm(): ReactElement {
         <div className="flex w-full flex-col gap-4 sm:flex-row">
           <div className="w-full max-w-96 space-y-2">
             <Label>Header Image</Label>
-            {formValues.header_img ? (
-              <Image
-                src={formValues.header_img}
-                alt="cover"
-                width={620}
-                height={310}
-                className="aspect-video w-96 rounded object-cover"
-              />
-            ) : (
-              <div className="aspect-video rounded bg-slate-700" />
-            )}
+            <div className="relative overflow-clip rounded">
+              <label
+                htmlFor="header-img-local"
+                className="absolute left-0 top-0 grid h-full w-full cursor-pointer place-content-center bg-indigo-500 bg-opacity-50 opacity-0 transition hover:opacity-100"
+              >
+                <ImageUp />
+              </label>
+              {formValues.header_img || localImage.header_img ? (
+                <Image
+                  src={
+                    !localImage.header_img
+                      ? formValues.header_img
+                      : localImage.header_img
+                  }
+                  alt="cover"
+                  width={620}
+                  height={310}
+                  className="aspect-video w-96 rounded object-cover"
+                />
+              ) : (
+                <div className="aspect-video rounded bg-background" />
+              )}
+            </div>
             <ErrorMessage>{state.errors?.header_img?.[0]}</ErrorMessage>
           </div>
           <div className="w-full max-w-96 space-y-2">
             <Label>Image</Label>
-            {formValues.image ? (
-              <Image
-                src={formValues.image}
-                alt="cover"
-                width={620}
-                height={348.75}
-                className="aspect-video w-96 rounded object-cover"
-              />
-            ) : (
-              <div className="aspect-video rounded bg-slate-700" />
-            )}
+            <div className="relative overflow-clip rounded">
+              <label
+                htmlFor="image-local"
+                className="absolute left-0 top-0 grid h-full w-full cursor-pointer place-content-center bg-indigo-500 bg-opacity-50 opacity-0 transition hover:opacity-100"
+              >
+                <ImageUp />
+              </label>
+              {formValues.image || localImage.image ? (
+                <Image
+                  src={!localImage.image ? formValues.image : localImage.image}
+                  alt="cover"
+                  width={620}
+                  height={310}
+                  className="aspect-video w-96 rounded object-cover"
+                />
+              ) : (
+                <div className="aspect-video rounded bg-background" />
+              )}
+            </div>
             <ErrorMessage>{state.errors?.image?.[0]}</ErrorMessage>
           </div>
         </div>
+        <input
+          type="file"
+          accept="image/*"
+          id="header-img-local"
+          name="header-img-local"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            const reader = new FileReader();
+
+            reader.onload = () => {
+              setLocalImage((prev) => ({
+                ...prev,
+                header_img: reader.result as string,
+              }));
+            };
+
+            if (file?.type.startsWith('image/')) {
+              reader.readAsDataURL(file);
+              return;
+            }
+
+            setToastOpen(true);
+            setMessage('File is not an image');
+          }}
+        />
+        <input
+          type="file"
+          accept="image/*"
+          id="image-local"
+          name="image-local"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            const reader = new FileReader();
+
+            reader.onload = () => {
+              setLocalImage((prev) => ({
+                ...prev,
+                image: reader.result as string,
+              }));
+            };
+
+            if (file?.type.startsWith('image/')) {
+              reader.readAsDataURL(file);
+              return;
+            }
+
+            setToastOpen(true);
+            setMessage('File is not an image');
+          }}
+        />
         <TextInput
           id="header-img"
           name="header-img"
@@ -257,7 +341,7 @@ function SteamGame({
   onClick: (id: number) => void;
 }): ReactElement {
   return (
-    <div className="absolute left-0 top-full mt-2 max-h-96 w-full overflow-y-auto rounded-lg bg-zinc-800">
+    <div className="absolute left-0 top-full z-20 mt-2 max-h-96 w-full overflow-y-auto rounded-lg bg-zinc-800">
       {games.map((game) => (
         <div
           key={`game-${game.id.toString()}`}
