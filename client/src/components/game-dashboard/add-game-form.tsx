@@ -168,7 +168,7 @@ export function AddGameForm(): ReactElement {
             <ErrorMessage>{state.errors?.price?.[0]}</ErrorMessage>
           </InputGroup>
           <InputGroup>
-            <Label htmlFor="name">Short Description</Label>
+            <Label htmlFor="short-description">Short Description</Label>
             <TextInput
               id="short-description"
               type="text"
@@ -177,7 +177,7 @@ export function AddGameForm(): ReactElement {
               onChange={(e) => {
                 setFormValues((prev) => ({
                   ...prev,
-                  shortDescription: e.target.value,
+                  short_description: e.target.value,
                 }));
               }}
             />
