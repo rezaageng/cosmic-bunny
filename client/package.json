@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "cloudinary": "^2.5.1",
     "lucide-react": "^0.466.0",
     "motion": "^11.14.4",
     "next": "14.2.5",
