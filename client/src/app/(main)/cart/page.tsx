@@ -6,7 +6,7 @@ import { Rabbit } from 'lucide-react';
 import { getCart } from '@/services';
 import { formatCurrency } from '@/lib/utils';
 import { CartActions } from '@/components/cart/cart-actions';
-import { Button } from '@/components/button';
+import { CartCheckout } from '@/components/cart/cart-checkout';
 
 export default async function Cart(): Promise<ReactElement> {
   const token = cookies().get('token')?.value ?? '';
@@ -59,7 +59,7 @@ export default async function Cart(): Promise<ReactElement> {
                   {formatCurrency(data.amount)}
                 </p>
               </div>
-              <Button className="mt-4">Checkout</Button>
+              <CartCheckout cartIds={data.items.map((item) => item.id)} />
             </div>
           </div>
         </>

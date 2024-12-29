@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import Script from 'next/script';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
 
@@ -22,6 +23,12 @@ export default function RootLayout({
 }>): JSX.Element {
   return (
     <html lang="en " className={`${geistSans.variable} antialiased`}>
+      <head>
+        <Script
+          src={`${process.env.MIDTRANS_URL}/snap/snap.js`}
+          data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+        />
+      </head>
       <body className="font-sans">
         {children}
         <Toast />

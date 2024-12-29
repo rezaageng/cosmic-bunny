@@ -18,6 +18,7 @@ import {
   type GameResponse,
   GameResponseSchema,
 } from '@/schemas/games';
+import { SnapResponseSchema } from '@/schemas/midtrans';
 
 export const register = async (
   _prevState: unknown,
@@ -509,4 +510,31 @@ export const updateGame = async (
   revalidateTag('games');
 
   return responseParsed.data ?? { message: 'An error occurred', data: null };
+};
+
+export const checkout = async (): Promise<string> => {
+  const snap = await fetch(`${process.env.MIDTRANS_URL}/snap/v1/transactions`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Basic ${Buffer.from(
+        `${process.env.MIDTRANS_SERVER_KEY}:`,
+      ).toString('base64')}`,
+    },
+    body: JSON.stringify({
+      transaction_details: {
+        order_id: 'yoi',
+        gross_amount: 10000,
+      },
+    }),
+  });
+
+  const snapResult = SnapResponseSchema.safeParse(await snap.json());
+
+  if (!snapResult.success) {
+    throw new Error('Failed to parse snap response');
+  }
+
+  return snapResult.data.token;
 };
