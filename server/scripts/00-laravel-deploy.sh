@@ -8,5 +8,8 @@ php artisan config:cache
 echo "Caching routes..."
 php artisan route:cache
 
+echo "Generating key...:
+php artisan key:generate
+
 echo "Running migrations..."
 php artisan migrate --force
