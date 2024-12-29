@@ -59,7 +59,7 @@ export default async function Cart(): Promise<ReactElement> {
                   {formatCurrency(data.amount)}
                 </p>
               </div>
-              <CartCheckout cartIds={data.items.map((item) => item.id)} />
+              <CartCheckout gameIds={data.items.map((item) => item.game.id)} />
             </div>
           </div>
         </>

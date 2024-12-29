@@ -18,7 +18,12 @@ import {
   type GameResponse,
   GameResponseSchema,
 } from '@/schemas/games';
-import { SnapResponseSchema } from '@/schemas/midtrans';
+import {
+  type SnapBody,
+  SnapBodySchema,
+  SnapResponseSchema,
+} from '@/schemas/midtrans';
+import { OrderBodySchema, OrderResponseSchema } from '@/schemas/order';
 
 export const register = async (
   _prevState: unknown,
@@ -512,7 +517,76 @@ export const updateGame = async (
   return responseParsed.data ?? { message: 'An error occurred', data: null };
 };
 
-export const checkout = async (): Promise<string> => {
+export const checkout = async (
+  gameIds: number[],
+): Promise<{
+  token: string;
+  orderId: number;
+}> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  const body = OrderBodySchema.safeParse({
+    userId: user.data.id,
+    gameIds,
+    status: 'pending',
+  });
+
+  if (!body.success) {
+    throw new Error('Failed to parse orders body');
+  }
+
+  const order = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      user_id: body.data.userId,
+      game_ids: body.data.gameIds,
+      status: body.data.status,
+    }),
+  });
+
+  const orderRes = OrderResponseSchema.safeParse(await order.json());
+
+  if (!orderRes.success) {
+    throw new Error('Failed to parse order response');
+  }
+
+  revalidateTag('orders');
+
+  const snapBody: SnapBody = {
+    transaction_details: {
+      order_id: `CBO-${orderRes.data.data.id.toString()}`,
+      gross_amount: orderRes.data.data.amount,
+    },
+    customer_details: {
+      first_name: user.data.name,
+      last_name: '',
+      email: user.data.email,
+    },
+    item_details: orderRes.data.data.games.map((game) => ({
+      id: game.id.toString(),
+      price: game.price,
+      quantity: 1,
+      name: game.name,
+    })),
+  };
+
+  const snapBodyParsed = SnapBodySchema.safeParse(snapBody);
+
+  if (!snapBodyParsed.success) {
+    throw new Error('Failed to parse snap body');
+  }
+
   const snap = await fetch(`${process.env.MIDTRANS_URL}/snap/v1/transactions`, {
     method: 'POST',
     headers: {
@@ -522,19 +596,64 @@ export const checkout = async (): Promise<string> => {
         `${process.env.MIDTRANS_SERVER_KEY}:`,
       ).toString('base64')}`,
     },
-    body: JSON.stringify({
-      transaction_details: {
-        order_id: 'yoi',
-        gross_amount: 10000,
-      },
-    }),
+    body: JSON.stringify(snapBodyParsed.data),
   });
 
-  const snapResult = SnapResponseSchema.safeParse(await snap.json());
+  const snapRes = SnapResponseSchema.safeParse(await snap.json());
 
-  if (!snapResult.success) {
+  if (!snapRes.success) {
     throw new Error('Failed to parse snap response');
   }
 
-  return snapResult.data.token;
+  return {
+    token: snapRes.data.token,
+    orderId: orderRes.data.data.id,
+  };
+};
+
+export const updateOrder = async ({
+  id,
+  status,
+  gameIds,
+}: {
+  id: number;
+  status: 'succeed' | 'failed';
+  gameIds: number[];
+}): Promise<void> => {
+  const token = cookies().get('token')?.value ?? '';
+
+  const user = await getCurrentUser({ token });
+
+  if (!user.data) {
+    redirect('/login');
+  }
+
+  const body = OrderBodySchema.safeParse({
+    userId: user.data.id,
+    gameIds,
+    status,
+  });
+
+  if (!body.success) {
+    throw new Error('Failed to parse orders body');
+  }
+
+  await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${id.toString()}`,
+    {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        user_id: body.data.userId,
+        game_ids: body.data.gameIds,
+        status: body.data.status,
+      }),
+    },
+  );
+
+  revalidateTag('orders');
 };
