@@ -563,6 +563,13 @@ export const checkout = async (
 
   revalidateTag('orders');
 
+  if (orderRes.data.data.amount === 0) {
+    return {
+      token: '',
+      orderId: orderRes.data.data.id,
+    };
+  }
+
   const snapBody: SnapBody = {
     transaction_details: {
       order_id: `CBO-${orderRes.data.data.id.toString()}`,
