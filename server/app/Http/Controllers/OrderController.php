@@ -56,21 +56,24 @@ class OrderController extends Controller
             'game_ids' => 'required|array',
             'game_ids.*' => 'exists:games,id',
         ]);
-    
+
         // Membuat order baru
         $order = Order::create([
             'user_id' => $request->user_id,
             'status' => $request->status,
         ]);
-    
+
         // Menambahkan game ke order
         $order->games()->attach($request->game_ids);
-    
+
         $order->load('games', 'user');
-    
+
+        $totalAmount = $order->games->sum('price');
+
         $data = [
             'id' => $order->id,
             'status' => $order->status,
+            'amount' => $totalAmount, // Total harga dari games di order
             'user' => [
                 'id' => $order->user->id,
                 'name' => $order->user->name,
@@ -85,7 +88,7 @@ class OrderController extends Controller
                 ];
             }),
         ];
-    
+
         return response()->json([
             'message' => 'Order created successfully',
             'data' => $data,
@@ -99,6 +102,7 @@ class OrderController extends Controller
         $request->validate([
             'game_ids' => 'required|array',
             'game_ids.*' => 'exists:games,id',
+            'status' => 'required|in:pending,succeed,failed',
         ]);
 
         $order = Order::findOrFail($orderId);
@@ -111,11 +115,18 @@ class OrderController extends Controller
         // Sinkronisasi game_ids
         $order->games()->sync($request->game_ids);
 
+        // Update order status
+        $order->status = $request->status;
+        $order->save();
+
         $order->load('games', 'user');
+
+        $totalAmount = $order->games->sum('price');
 
         $data = [
             'id' => $order->id,
             'status' => $order->status,
+            'amount' => $totalAmount, // Total harga dari games di order
             'user' => [
                 'id' => $order->user->id,
                 'name' => $order->user->name,
@@ -142,9 +153,9 @@ class OrderController extends Controller
         $user = $request->user();
 
         $order = Order::where('user_id', $user->id)->findOrFail($orderId);
-    
+
         $totalAmount = $order->games->sum('price');
-    
+
         $data = [
             'id' => $order->id,
             'status' => $order->status,
@@ -163,8 +174,9 @@ class OrderController extends Controller
                 ];
             }),
         ];
-    
+
         return response()->json([
+            'message' => 'Success',
             'data' => $data,
         ]);
     }

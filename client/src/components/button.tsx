@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactElement } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'text' | 'danger' | 'outline';
+  variant?: 'primary' | 'secondary' | 'accent' | 'text' | 'danger' | 'outline';
 }
 
 export function Button({
@@ -29,6 +29,7 @@ export function Button({
           'cursor-not-allowed bg-rose-400': variant === 'danger' && disabled,
           'border border-indigo-700 text-indigo-700 hover:bg-zinc-900':
             variant === 'outline',
+          'bg-teal-500 hover:bg-teal-700': variant === 'accent',
         },
         className,
       )}

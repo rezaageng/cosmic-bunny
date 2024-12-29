@@ -32,6 +32,10 @@ export const detectOS = (): OS => {
 };
 
 export const formatCurrency = (amount: number): string => {
+  if (amount === 0) {
+    return 'Free';
+  }
+
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
