@@ -13,3 +13,5 @@ php artisan key:generate
 
 echo "Running migrations..."
 php artisan migrate --force
+
+chown -R sail:sail storage
