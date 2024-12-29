@@ -102,6 +102,7 @@ class OrderController extends Controller
         $request->validate([
             'game_ids' => 'required|array',
             'game_ids.*' => 'exists:games,id',
+            'status' => 'required|in:pending,succeed,failed',
         ]);
 
         $order = Order::findOrFail($orderId);
@@ -113,6 +114,10 @@ class OrderController extends Controller
 
         // Sinkronisasi game_ids
         $order->games()->sync($request->game_ids);
+
+        // Update order status
+        $order->status = $request->status;
+        $order->save();
 
         $order->load('games', 'user');
 
