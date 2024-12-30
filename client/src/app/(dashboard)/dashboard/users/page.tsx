@@ -15,7 +15,7 @@ export default function UserDashboard(): ReactElement {
       <div className="space-y-4">
         <div className="mb-6 flex items-center justify-between">
           <Link
-            href="/dashboard/users/add"
+            href="/dashboard/users"
             className="flex items-center gap-2 text-sm font-semibold text-indigo-500"
           >
             <Plus /> <span>Add User</span>
