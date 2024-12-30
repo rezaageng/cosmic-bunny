@@ -572,7 +572,7 @@ export const checkout = async (
 
   const snapBody: SnapBody = {
     transaction_details: {
-      order_id: `CBO-${orderRes.data.data.id.toString()}`,
+      order_id: `CBO-${orderRes.data.data.id.toString()}-${crypto.randomUUID()}`,
       gross_amount: orderRes.data.data.amount,
     },
     customer_details: {
