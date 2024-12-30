@@ -38,17 +38,6 @@ class PDFController extends Controller
         // Buat PDF
         $pdf = Pdf::loadView('orders.OrdersReport', ['orders' => $data]);
 
-        // save PDF
-        $pdfPath = storage_path('app/public/exported_table.pdf');
-        $pdf->save($pdfPath);
-
-        // Generate URL
-        $url = asset('storage/order_report.pdf');
-
-        // return url pke json
-        return response()->json([
-            'message' => 'PDF Created',
-            'download_url' => $url,
-        ]);
+        return $pdf->stream('order_report.pdf');
     }
 }
