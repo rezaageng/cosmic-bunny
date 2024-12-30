@@ -6,10 +6,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WishlistController;
 
 // Authentication Routes
@@ -23,6 +24,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+// Public Game Routes
 Route::apiResource('/games', GameController::class)->except(['store', 'update', 'destroy']);
 
 // Protected Routes
@@ -32,12 +34,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/games', [GameController::class, 'store']);
         Route::put('/games/{game}', [GameController::class, 'update']);
         Route::delete('/games/{game}', [GameController::class, 'destroy']);
-      
-        //user
+
+        // User Management Routes
         Route::get('/users', [UserController::class, 'index']); // List all users
-        Route::get('/users/{user}', [UserController::class, 'show']); 
-        Route::put('/users/{user}', [UserController::class, 'update']); 
-        Route::delete('/users/{user}', [UserController::class, 'destroy']); 
+        Route::get('/users/{user}', [UserController::class, 'show']);
+        Route::put('/users/{user}', [UserController::class, 'update']);
+        Route::delete('/users/{user}', [UserController::class, 'destroy']);
     });
 
     // Library Routes
@@ -57,4 +59,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('/orders', OrderController::class);
     Route::put('/orders/{orderId}', [OrderController::class, 'update']);
 
+    // Category Routes
+    Route::apiResource('/categories', CategoryController::class);
 });
