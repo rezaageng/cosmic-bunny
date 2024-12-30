@@ -3,11 +3,12 @@
 use Illuminate\Http\Request;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\WishlistController;
@@ -57,4 +58,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('/orders', OrderController::class);
     Route::put('/orders/{orderId}', [OrderController::class, 'update']);
 
+    //pdf routes
+    Route::get('/pdf', [PDFController::class, 'index']);
 });
