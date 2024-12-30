@@ -28,17 +28,20 @@ Route::apiResource('/games', GameController::class)->except(['store', 'update', 
 
 // Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
-    // Game Routes (admin)
+    // admin routes
     Route::middleware([CheckRole::class])->group(function () {
         Route::post('/games', [GameController::class, 'store']);
         Route::put('/games/{game}', [GameController::class, 'update']);
         Route::delete('/games/{game}', [GameController::class, 'destroy']);
-      
+
         //user
         Route::get('/users', [UserController::class, 'index']); // List all users
-        Route::get('/users/{user}', [UserController::class, 'show']); 
-        Route::put('/users/{user}', [UserController::class, 'update']); 
-        Route::delete('/users/{user}', [UserController::class, 'destroy']); 
+        Route::get('/users/{user}', [UserController::class, 'show']);
+        Route::put('/users/{user}', [UserController::class, 'update']);
+        Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
+        // PDF
+        Route::get('/pdf', [PDFController::class, 'index']);
     });
 
     // Library Routes
@@ -57,7 +60,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Order Routes
     Route::apiResource('/orders', OrderController::class);
     Route::put('/orders/{orderId}', [OrderController::class, 'update']);
-
-    //pdf routes
-    Route::get('/pdf', [PDFController::class, 'index']);
 });

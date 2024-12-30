@@ -10,14 +10,6 @@ class PDFController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-        
-        if ($user->role !== 'admin') {
-            return response()->json([
-                'message' => 'Anda tidak diizinkan untuk mengakses halaman ini',
-            ]);
-        }
-
         // Ambil data order dengan relasi games dan user
         $orders = Order::with(['games', 'user'])->get();
 
