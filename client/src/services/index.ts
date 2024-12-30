@@ -7,6 +7,7 @@ import {
   GamesResponseSchema,
 } from '@/schemas/games';
 import { type LibraryResponse, LibraryResponseSchema } from '@/schemas/library';
+import { type OrdersResponse, OrdersResponseSchema } from '@/schemas/order';
 import {
   type SteamGameResponse,
   SteamGameResponseSchema,
@@ -263,6 +264,39 @@ export const getSteamGame = async ({
 
   if (!data.success) {
     throw new Error('Failed to parse games response');
+  }
+
+  return data.data;
+};
+
+export const getOrder = async ({
+  token,
+}: {
+  token: string;
+}): Promise<OrdersResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/orders`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      next: {
+        tags: ['orders'],
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch orders');
+  }
+
+  const data = OrdersResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse orders response');
   }
 
   return data.data;
