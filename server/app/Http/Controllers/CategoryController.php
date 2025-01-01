@@ -27,12 +27,15 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'game_ids' => 'required|array',
+            'game_ids' => 'sometimes|array',
             'game_ids.*' => 'exists:games,id',
-
         ]);
 
         $category = Category::create($request->only('name'));
+
+        if ($request->has('game_ids')) {
+            $category->games()->attach($request->game_ids);
+        }
 
         return response()->json([
             'message' => 'Category created successfully',

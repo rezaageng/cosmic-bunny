@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Category; // Pastikan namespace untuk model Category benar
+use App\Models\Category;
 
 class Games extends Model
 {
@@ -13,6 +13,10 @@ class Games extends Model
         'price' => 'float',
     ];
 
+    protected $appends = ['categories_list'];
+
+    protected $hidden = ['categories'];
+
     public function orders()
     {
         return $this->belongsTo(Order::class, 'game_order', 'order_id', 'game_id');
@@ -20,6 +24,11 @@ class Games extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'category_game', 'category_id', 'game_id');
+        return $this->belongsToMany(Category::class, 'category_game', 'game_id', 'category_id');
+    }
+
+    public function getCategoriesListAttribute()
+    {
+        return $this->categories->pluck('name')->toArray();
     }
 }

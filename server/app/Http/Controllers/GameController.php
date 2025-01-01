@@ -33,8 +33,8 @@ class GameController extends Controller
         'price' => 'required|numeric',
         'header_img' => 'required|string',
         'image' => 'required|string',
-        'categories' => 'array',
-        'categories.*' => 'integer|exists:categories,id',
+        'categories' => 'sometimes|array',
+        'categories.*' => 'exists:categories,id'
     ]);
 
     $game = Games::create($request->only([
@@ -48,12 +48,15 @@ class GameController extends Controller
     ]));
 
     if ($request->has('categories')) {
-        $game->categories()->sync($request->categories);
+        $game->categories()->attach($request->categories);
     }
+
+    // Reload the model with categories
+    $game->load('categories');
 
     return response()->json([
         'message' => 'Game created successfully',
-        'data' => $game->load('categories'), // Muat relasi kategori di sini
+        'data' => $game
     ]);
 }
 
