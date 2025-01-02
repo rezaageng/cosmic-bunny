@@ -22,7 +22,7 @@ import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/actions';
 import { cn, detectOS, getCookies, type OS } from '@/lib/utils';
 import { type GamesResponse } from '@/schemas/games';
-import { getGames } from '@/services';
+import { getCategories, getGames } from '@/services';
 import { type NavbarProps } from '@/components/navbar';
 
 export function NavbarActions({ variant }: NavbarProps): ReactElement {
@@ -195,7 +195,9 @@ function SearchModal({
   setIsSearchOpen: (value: boolean) => void;
 }): ReactElement {
   const [data, setData] = useState<GamesResponse | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<string[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -225,6 +227,18 @@ function SearchModal({
     }
   }, []);
 
+  useEffect(() => {
+    const fetchCategories = async (): Promise<void> => {
+      const temp = await getCategories({});
+
+      for (const category of temp.data) {
+        setCategories((prev) => [...prev, category.name]);
+      }
+    };
+
+    void fetchCategories();
+  }, []);
+
   return (
     <div className="fixed left-0 top-32 z-50 w-screen max-w-2xl translate-x-0 p-4 sm:left-1/2 sm:m-0 sm:-translate-x-1/2">
       <div className="overflow-clip rounded-2xl border border-white/25 bg-background">
@@ -239,9 +253,46 @@ function SearchModal({
             className="w-full bg-transparent outline-none"
           />
         </div>
+        <div className="space-y-2 p-4">
+          <span className="inline-block">Filter</span>
+          <ul className="flex flex-grow flex-wrap gap-2">
+            {categories.map((category) => (
+              <li key={category}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (filter.includes(category)) {
+                      setFilter((prev) =>
+                        prev.filter((item) => item !== category),
+                      );
+                      return;
+                    }
+
+                    setFilter((prev) => [...prev, category]);
+                  }}
+                  className={cn(
+                    'rounded-lg bg-gray-800 px-2 py-1 hover:bg-gray-700',
+                    {
+                      'bg-indigo-600': filter.includes(category),
+                    },
+                  )}
+                >
+                  {category}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
         {data && data.data.length !== 0 ? (
           <ul className="max-h-80 overflow-y-auto border-t border-white/25">
-            {data.data.map((game) => (
+            {(filter.length > 0
+              ? data.data.filter((game) =>
+                  filter.some((category) =>
+                    game.categories_list.includes(category),
+                  ),
+                )
+              : data.data
+            ).map((game) => (
               <li key={`search-result-${game.id.toString()}`}>
                 <Link
                   href={`/game/${game.id.toString()}`}
