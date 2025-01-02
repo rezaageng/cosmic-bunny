@@ -17,7 +17,7 @@ class UserController extends Controller
         $user = User::query();
 
         if ($request->has('search')) {
-            $user->where('name', 'like', "%" . $request->search . "%");
+            $user->where('name', 'ilike', "%" . $request->search . "%");
         }
         $user = $user->get();
 
@@ -26,20 +26,22 @@ class UserController extends Controller
             'data' => $user
         ]);
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
-            'name'=>'required|string',
-            'email'=>'required|string|email|unique::users',
-            'image'=> 'string',
+            'name' => 'required|string',
+            'email' => 'required|string|email|unique::users',
+            'image' => 'string',
             'role' => [
-                    'required',
-                    'string',
-                    Rule::in (array_column (Role::cases(),
-                    'value'))
+                'required',
+                'string',
+                Rule::in(array_column(
+                    Role::cases(),
+                    'value'
+                ))
             ],
-            'password'=> [
+            'password' => [
                 'required',
                 'string',
                 'min:8',
