@@ -11,6 +11,7 @@ import {
   Command,
   User as IUser,
   LibraryBig,
+  LogInIcon,
   Search,
   ShoppingCart,
   Star,
@@ -19,12 +20,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { logout } from '@/lib/actions';
-import { cn, detectOS, type OS } from '@/lib/utils';
+import { cn, detectOS, getCookies, type OS } from '@/lib/utils';
 import { type GamesResponse } from '@/schemas/games';
 import { getGames } from '@/services';
 import { type NavbarProps } from '@/components/navbar';
 
 export function NavbarActions({ variant }: NavbarProps): ReactElement {
+  const token = decodeURIComponent(getCookies('token'));
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [os, setOs] = useState<OS>('Unknown');
@@ -126,17 +129,27 @@ export function NavbarActions({ variant }: NavbarProps): ReactElement {
           </Link>
         </>
       ) : null}
+      {token ? (
+        <button
+          onClick={() => {
+            setIsDropdownOpen((prev) => !prev);
+          }}
+          type="button"
+        >
+          <div className="flex aspect-square w-9 items-center justify-center rounded-full bg-indigo-700">
+            <IUser />
+          </div>
+        </button>
+      ) : (
+        <Link
+          href="/login"
+          className="flex items-center gap-2 font-semibold text-indigo-500"
+        >
+          <LogInIcon />
+          <span>Login</span>
+        </Link>
+      )}
 
-      <button
-        onClick={() => {
-          setIsDropdownOpen((prev) => !prev);
-        }}
-        type="button"
-      >
-        <div className="flex aspect-square w-9 items-center justify-center rounded-full bg-indigo-700">
-          <IUser />
-        </div>
-      </button>
       {isDropdownOpen ? <UserDropdown ref={dropdownRef} /> : null}
       {isSearchOpen ? <SearchModal setIsSearchOpen={setIsSearchOpen} /> : null}
       {isSearchOpen ? (
