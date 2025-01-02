@@ -136,7 +136,7 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
     }
 
     const fetchCategories = async (): Promise<void> => {
-      const { data } = await getCategories({ token, search: categoriesSearch });
+      const { data } = await getCategories({ search: categoriesSearch });
 
       setCategories(data);
     };
@@ -164,7 +164,7 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
 
     if (tempCategories.length === 0) {
       void (async (): Promise<void> => {
-        const response = await getCategories({ token });
+        const response = await getCategories({});
         setTempCategories(response.data);
       })();
     }

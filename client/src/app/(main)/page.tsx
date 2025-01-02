@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { GameList } from '@/components/home/game-list';
-import { getGames } from '@/services';
+import { getCategories } from '@/services';
 
 export default async function Home(): Promise<ReactElement> {
-  const games = await getGames({});
+  const { data } = await getCategories({});
 
   return (
     <section className="mx-auto max-w-screen-2xl space-y-8 px-4">
@@ -17,8 +17,15 @@ export default async function Home(): Promise<ReactElement> {
           className="object-cover"
         />
       </div>
-      {/* Newly Released Games Section */}
-      <GameList title="New Games" games={games.data} />
+      {[...data]
+        .filter((category) => category.games.length > 0)
+        .map((category) => (
+          <GameList
+            key={`game-category-${category.id.toString()}`}
+            title={category.name}
+            games={category.games}
+          />
+        ))}
     </section>
   );
 }

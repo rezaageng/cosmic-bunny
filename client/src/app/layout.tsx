@@ -30,10 +30,8 @@ export default function RootLayout({
           data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
         />
       </head>
-      <body className="flex flex-col min-h-screen font-sans">
-        <div className="flex-grow">
-          {children}
-        </div>
+      <body className="flex min-h-screen flex-col font-sans">
+        <div className="mb-8 flex-grow">{children}</div>
         <Toast />
         <Modal />
         <Footer />
@@ -41,4 +39,3 @@ export default function RootLayout({
     </html>
   );
 }
-

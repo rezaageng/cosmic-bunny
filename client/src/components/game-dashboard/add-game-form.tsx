@@ -128,7 +128,7 @@ export function AddGameForm(): ReactElement {
     }
 
     const fetchCategories = async (): Promise<void> => {
-      const { data } = await getCategories({ token, search: categoriesSearch });
+      const { data } = await getCategories({ search: categoriesSearch });
 
       setCategories(data);
     };

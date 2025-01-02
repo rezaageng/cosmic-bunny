@@ -307,10 +307,8 @@ export const getOrder = async ({
 };
 
 export const getCategories = async ({
-  token,
   search,
 }: {
-  token: string;
   search?: string;
 }): Promise<CategoriesResponse> => {
   const response = await fetch(
@@ -320,7 +318,6 @@ export const getCategories = async ({
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     },
   );
