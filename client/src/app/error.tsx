@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactElement } from 'react';
-import { logout } from '@/lib/actions';
+import { removeCookie } from '@/lib/utils';
 
 export default function Error({
   error,
@@ -15,9 +15,9 @@ export default function Error({
       <h2>Something went wrong!</h2>
       <button
         type="button"
-        onClick={async () => {
+        onClick={() => {
           if (error.message === '401') {
-            await logout();
+            removeCookie('token');
           }
           reset();
         }}

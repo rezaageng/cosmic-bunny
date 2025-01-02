@@ -41,7 +41,18 @@ export const getCurrentUser = async ({
   );
 
   if (response.status === 401) {
-    throw new Error('401');
+    const data: UserResponse = {
+      message: 'Unauthorized',
+      data: undefined,
+    };
+
+    const parsed = UserResponseSchema.safeParse(data);
+
+    if (!parsed.success) {
+      throw new Error('Failed to parse user response');
+    }
+
+    return parsed.data;
   }
 
   if (!response.ok) {

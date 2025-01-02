@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useTransition, type ReactElement } from 'react';
+import { useEffect, useState, useTransition, type ReactElement } from 'react';
 import { useShallow } from 'zustand/shallow';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/button';
 import {
   addToCart,
@@ -14,7 +15,7 @@ import {
 } from '@/lib/actions';
 import { useToastStore } from '@/store/toast';
 import { getCookies } from '@/lib/utils';
-import { getCart, getWishlist } from '@/services';
+import { getCart, getCurrentUser, getWishlist } from '@/services';
 
 interface GameActionsProps {
   id: number;
@@ -33,14 +34,28 @@ export function GameActions({
     ]),
   );
 
+  const [authToken, setAuthToken] = useState('');
+
   const [isPending, setTransition] = useTransition();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setAuthToken(decodeURIComponent(getCookies('token')));
+  }, []);
 
   const buyHandler = async (): Promise<void> => {
     setIsOpen(true);
     setMessage('Processing payment...');
     setVariant('loading');
 
-    const authToken = decodeURIComponent(getCookies('token'));
+    const user = await getCurrentUser({ token: authToken });
+
+    if (!user.data) {
+      setIsOpen(false);
+      setVariant('message');
+      router.push('/login');
+    }
 
     const cart = await getCart({ token: authToken });
     const wishlist = await getWishlist({ token: authToken });
@@ -121,6 +136,10 @@ export function GameActions({
         variant="secondary"
         onClick={() => {
           if (isPending) return;
+          if (!authToken) {
+            router.push('/login');
+            return;
+          }
           setTransition(async () => {
             await addToCart(id);
           });
@@ -133,6 +152,10 @@ export function GameActions({
         variant="secondary"
         onClick={() => {
           if (isPending) return;
+          if (!authToken) {
+            router.push('/login');
+            return;
+          }
           setTransition(async () => {
             await addToWishlist(id);
           });
