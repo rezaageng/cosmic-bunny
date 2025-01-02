@@ -1,6 +1,10 @@
 import { type UserResponse, UserResponseSchema } from '@/schemas/auth';
 import { type CartResponse, CartResponseSchema } from '@/schemas/cart';
 import {
+  type CategoriesResponse,
+  CategoriesResponseSchema,
+} from '@/schemas/categories';
+import {
   type GameResponse,
   GameResponseSchema,
   type GamesResponse,
@@ -37,7 +41,18 @@ export const getCurrentUser = async ({
   );
 
   if (response.status === 401) {
-    throw new Error('401');
+    const data: UserResponse = {
+      message: 'Unauthorized',
+      data: undefined,
+    };
+
+    const parsed = UserResponseSchema.safeParse(data);
+
+    if (!parsed.success) {
+      throw new Error('Failed to parse user response');
+    }
+
+    return parsed.data;
   }
 
   if (!response.ok) {
@@ -297,6 +312,35 @@ export const getOrder = async ({
 
   if (!data.success) {
     throw new Error('Failed to parse orders response');
+  }
+
+  return data.data;
+};
+
+export const getCategories = async ({
+  search,
+}: {
+  search?: string;
+}): Promise<CategoriesResponse> => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/categories?search=${search ?? ''}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch categories');
+  }
+
+  const data = CategoriesResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse categories response');
   }
 
   return data.data;

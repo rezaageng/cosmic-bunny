@@ -58,6 +58,18 @@ export default async function GamePage({
             alt={data.name}
             className="aspect-video w-full rounded"
           />
+          <div className="flex gap-2">
+            {data.categories_list.length > 0
+              ? data.categories_list.map((category, catId) => (
+                  <span
+                    key={`game-category-${catId.toString()}`}
+                    className="inline-block rounded-full bg-indigo-600 px-2 py-1 text-sm font-semibold"
+                  >
+                    {category}
+                  </span>
+                ))
+              : null}
+          </div>
           <p>{data.short_description}</p>
           <GameDescription description={data.description} />
         </div>

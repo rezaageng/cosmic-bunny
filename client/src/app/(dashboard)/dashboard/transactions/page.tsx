@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
 import { cookies } from 'next/headers';
+import { Rabbit } from 'lucide-react';
 import { ExportButton } from '@/components/transaction';
 import { getOrder } from '@/services';
-import { Rabbit } from 'lucide-react';
 import { cn, formatCurrency } from '@/lib/utils';
 
 export default async function TransactionDashboard(): Promise<ReactElement> {

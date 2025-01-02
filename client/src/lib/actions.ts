@@ -14,6 +14,7 @@ import {
 import { getCurrentUser } from '@/services';
 import { GameUserBodySchema } from '@/schemas/global';
 import {
+  type GameBody,
   GameBodySchema,
   type GameResponse,
   GameResponseSchema,
@@ -24,6 +25,7 @@ import {
   SnapResponseSchema,
 } from '@/schemas/midtrans';
 import { OrderBodySchema, OrderResponseSchema } from '@/schemas/order';
+import { CategoryResponseSchema } from '@/schemas/categories';
 
 export const register = async (
   _prevState: unknown,
@@ -340,16 +342,20 @@ export const addGame = async (
     redirect('/login');
   }
 
-  const data = {
+  const data: GameBody = {
     name: formData.get('name') as string,
     publisher: formData.get('publisher') as string,
     price: Number(formData.get('price')),
     short_description: formData.get('short-description') as string,
     description: formData.get('description') as string,
     header_img: formData.get('header-img') as string,
-    header_img_local: formData.get('header-img-local') as string,
+    header_img_local: formData.get('header-img-local') as File,
     image: formData.get('image') as string,
-    image_local: formData.get('image-local') as string,
+    image_local: formData.get('image-local') as File,
+    categories: formData
+      .getAll('categories')
+      .map((category) => parseInt(category as string)),
+    new_categories: formData.getAll('new_categories') as unknown as string[],
   };
 
   const parsed = GameBodySchema.safeParse(data);
@@ -401,6 +407,36 @@ export const addGame = async (
     parsed.data.header_img = response.secure_url;
   }
 
+  if (parsed.data.new_categories && parsed.data.new_categories.length > 0) {
+    for (const category of parsed.data.new_categories) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/categories`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name: category }),
+        },
+      );
+
+      const responseParsed = CategoryResponseSchema.safeParse(
+        await response.json(),
+      );
+
+      if (!responseParsed.success) {
+        return {
+          message: 'An error occurred',
+          data: null,
+        };
+      }
+
+      parsed.data.categories?.push(responseParsed.data.data.id);
+    }
+  }
+
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/games`, {
     method: 'POST',
     headers: {
@@ -408,7 +444,16 @@ export const addGame = async (
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(parsed.data),
+    body: JSON.stringify({
+      name: parsed.data.name,
+      publisher: parsed.data.publisher,
+      price: parsed.data.price,
+      short_description: parsed.data.short_description,
+      description: parsed.data.description,
+      header_img: parsed.data.header_img,
+      image: parsed.data.image,
+      categories: parsed.data.categories,
+    }),
   });
 
   const responseParsed = GameResponseSchema.safeParse(await response.json());
@@ -428,7 +473,7 @@ export const updateGame = async (
     redirect('/login');
   }
 
-  const data = {
+  const data: GameBody = {
     id: Number(formData.get('id')),
     name: formData.get('name') as string,
     publisher: formData.get('publisher') as string,
@@ -436,9 +481,13 @@ export const updateGame = async (
     short_description: formData.get('short-description') as string,
     description: formData.get('description') as string,
     header_img: formData.get('header-img') as string,
-    header_img_local: formData.get('header-img-local') as string,
+    header_img_local: formData.get('header-img-local') as File,
     image: formData.get('image') as string,
-    image_local: formData.get('image-local') as string,
+    image_local: formData.get('image-local') as File,
+    categories: formData
+      .getAll('categories')
+      .map((category) => parseInt(category as string)),
+    new_categories: formData.getAll('new_categories') as unknown as string[],
   };
 
   const parsed = GameBodySchema.safeParse(data);
@@ -497,6 +546,36 @@ export const updateGame = async (
     parsed.data.header_img = response.secure_url;
   }
 
+  if (parsed.data.new_categories && parsed.data.new_categories.length > 0) {
+    for (const category of parsed.data.new_categories) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/categories`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name: category }),
+        },
+      );
+
+      const responseParsed = CategoryResponseSchema.safeParse(
+        await response.json(),
+      );
+
+      if (!responseParsed.success) {
+        return {
+          message: 'An error occurred',
+          data: null,
+        };
+      }
+
+      parsed.data.categories?.push(responseParsed.data.data.id);
+    }
+  }
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/games/${parsed.data.id.toString()}`,
     {
@@ -506,7 +585,16 @@ export const updateGame = async (
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(parsed.data),
+      body: JSON.stringify({
+        name: parsed.data.name,
+        publisher: parsed.data.publisher,
+        price: parsed.data.price,
+        short_description: parsed.data.short_description,
+        description: parsed.data.description,
+        header_img: parsed.data.header_img,
+        image: parsed.data.image,
+        categories: parsed.data.categories,
+      }),
     },
   );
 
