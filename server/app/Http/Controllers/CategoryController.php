@@ -10,9 +10,15 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::with('games')->get();
+        $query = Category::with('games');
+
+        if ($request->has('search')) {
+            $query->where('name', 'like', "%" . $request->search . "%");
+        }
+
+        $categories = $query->get();
 
         return response()->json([
             'message' => 'List of categories',
