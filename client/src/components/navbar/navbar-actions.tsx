@@ -26,12 +26,10 @@ import { getGames } from '@/services';
 import { type NavbarProps } from '@/components/navbar';
 
 export function NavbarActions({ variant }: NavbarProps): ReactElement {
-  const token = decodeURIComponent(getCookies('token'));
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [os, setOs] = useState<OS>('Unknown');
-
+  const [token, setToken] = useState('');
   const dropdownRef = useRef<HTMLUListElement>(null);
   const modalBackgroundRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +37,7 @@ export function NavbarActions({ variant }: NavbarProps): ReactElement {
 
   useEffect(() => {
     setOs(detectOS());
+    setToken(decodeURIComponent(getCookies('token')));
   }, []);
 
   useEffect(() => {
