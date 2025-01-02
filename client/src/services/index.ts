@@ -18,7 +18,7 @@ import {
   type SteamGamesResponse,
   SteamGamesResponseSchema,
 } from '@/schemas/steam-games';
-import { UsersResponse, UsersResponseSchema } from '@/schemas/users';
+import { type UsersResponse, UsersResponseSchema } from '@/schemas/users';
 import {
   type WishlistResponse,
   WishlistResponseSchema,
@@ -37,6 +37,9 @@ export const getCurrentUser = async ({
         Accept: 'application/json',
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
+      },
+      next: {
+        revalidate: 1,
       },
     },
   );
@@ -82,7 +85,7 @@ export const getGames = async ({
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      next: { tags: ['games'] },
+      next: { tags: ['games'], revalidate: 1 },
     },
   );
 
@@ -108,7 +111,7 @@ export const getGame = async (id: string): Promise<GameResponse> => {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      next: { tags: ['games'] },
+      next: { tags: ['games'], revalidate: 1 },
     },
   );
 
@@ -148,6 +151,7 @@ export const getLibrary = async ({
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      next: { tags: ['library'], revalidate: 1 },
     },
   );
 
@@ -178,6 +182,7 @@ export const getWishlist = async ({
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+      next: { tags: ['wishlist'], revalidate: 1 },
     },
   );
 
@@ -206,6 +211,7 @@ export const getCart = async ({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
+    next: { tags: ['cart'], revalidate: 1 },
   });
 
   if (!response.ok) {
@@ -301,6 +307,7 @@ export const getOrder = async ({
       },
       next: {
         tags: ['orders'],
+        revalidate: 1,
       },
     },
   );
@@ -331,6 +338,7 @@ export const getCategories = async ({
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      next: { tags: ['categories', 'games'], revalidate: 1 },
     },
   );
 
@@ -359,6 +367,7 @@ export const getUsers = async ({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
+    next: { tags: ['users'], revalidate: 1 },
   });
 
   if (!response.ok) {
