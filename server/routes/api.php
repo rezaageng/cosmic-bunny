@@ -27,6 +27,8 @@ Route::prefix('auth')->group(function () {
 
 // Public Game Routes
 Route::apiResource('/games', GameController::class)->except(['store', 'update', 'destroy']);
+Route::apiResource('/categories', CategoryController::class)->except(['store', 'update', 'destroy']);
+
 
 // Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -44,9 +46,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         // PDF
         Route::get('/pdf', [PDFController::class, 'index']);
-      
+
         // categories
-        Route::apiResource('/categories', CategoryController::class);
+        Route::apiResource('/categories', CategoryController::class)->only(['store', 'update', 'destroy']);
     });
 
     // Library Routes
