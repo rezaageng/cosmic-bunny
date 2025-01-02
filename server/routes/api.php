@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SteamController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WishlistController;
 
 // Authentication Routes
@@ -24,6 +25,7 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+// Public Game Routes
 Route::apiResource('/games', GameController::class)->except(['store', 'update', 'destroy']);
 
 // Protected Routes
@@ -34,7 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/games/{game}', [GameController::class, 'update']);
         Route::delete('/games/{game}', [GameController::class, 'destroy']);
 
-        //user
+        // User
         Route::get('/users', [UserController::class, 'index']); // List all users
         Route::get('/users/{user}', [UserController::class, 'show']);
         Route::put('/users/{user}', [UserController::class, 'update']);
@@ -42,6 +44,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         // PDF
         Route::get('/pdf', [PDFController::class, 'index']);
+      
+        // categories
+        Route::apiResource('/categories', CategoryController::class);
     });
 
     // Library Routes
