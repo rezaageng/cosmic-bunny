@@ -14,12 +14,13 @@ import {
   TextInput,
 } from '@/components/form';
 import type { SteamGamesResponse } from '@/schemas/steam-games';
-import { getSteamGame, getSteamGames } from '@/services';
+import { getCategories, getSteamGame, getSteamGames } from '@/services';
 import { getCookies } from '@/lib/utils';
 import { type GameResponse, type GameBody } from '@/schemas/games';
 import { updateGame } from '@/lib/actions';
 import { AddGameAction } from '@/components/game-dashboard/add-game-action';
 import { useToastStore } from '@/store/toast';
+import { type CategoriesResponse } from '@/schemas/categories';
 
 interface UpdateGameFormProps {
   game: GameResponse['data'];
@@ -31,14 +32,22 @@ const initialState: GameResponse = {
 };
 
 export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
+  const token = decodeURIComponent(getCookies('token'));
+
   const [state, formAction] = useFormState(updateGame, initialState);
 
   const [setToastOpen, setMessage] = useToastStore(
     useShallow((toastState) => [toastState.setIsOpen, toastState.setMessage]),
   );
 
+  const [tempCategories, setTempCategories] = useState<
+    CategoriesResponse['data']
+  >([]);
   const [search, setSearch] = useState('');
+  const [categoriesSearch, setCategoriesSearch] = useState('');
   const [games, setGames] = useState<SteamGamesResponse['data']>([]);
+  const [categories, setCategories] = useState<CategoriesResponse['data']>([]);
+  const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [localImage, setLocalImage] = useState({
     header_img: '',
     image: '',
@@ -51,11 +60,11 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
     description: '',
     header_img: '',
     image: '',
+    categories: [],
+    new_categories: [],
   });
 
   const selectGame = async (id: number): Promise<void> => {
-    const token = decodeURIComponent(getCookies('token'));
-
     const response = await getSteamGame({ id, token });
 
     setFormValues({
@@ -71,6 +80,34 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
     setSearch('');
   };
 
+  const selectCategory = ({
+    id,
+    name,
+  }: {
+    id?: number;
+    name?: string;
+  }): void => {
+    if (id && name) {
+      setFormValues((prev) => ({
+        ...prev,
+        categories: [...(prev.categories ?? []), id],
+      }));
+
+      setCategoriesSearch('');
+      setCategoryNames((prev) => [...prev, name]);
+
+      return;
+    }
+
+    setFormValues((prev) => ({
+      ...prev,
+      new_categories: [...(prev.new_categories ?? []), categoriesSearch],
+    }));
+
+    setCategoriesSearch('');
+    setCategoryNames((prev) => [...prev, categoriesSearch]);
+  };
+
   useEffect(() => {
     if (!search) {
       setGames([]);
@@ -78,8 +115,6 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
     }
 
     const fetchSteamGames = async (): Promise<void> => {
-      const token = decodeURIComponent(getCookies('token'));
-
       const response = await getSteamGames({ search, token });
 
       setGames(response.data);
@@ -92,7 +127,28 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
     return () => {
       clearTimeout(handler);
     };
-  }, [search]);
+  }, [search, token]);
+
+  useEffect(() => {
+    if (!categoriesSearch) {
+      setCategories([]);
+      return;
+    }
+
+    const fetchCategories = async (): Promise<void> => {
+      const { data } = await getCategories({ token, search: categoriesSearch });
+
+      setCategories(data);
+    };
+
+    const handler = setTimeout(() => {
+      void fetchCategories();
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [categoriesSearch, token]);
 
   useEffect(() => {
     if (state.data) {
@@ -106,6 +162,13 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
       notFound();
     }
 
+    if (tempCategories.length === 0) {
+      void (async (): Promise<void> => {
+        const response = await getCategories({ token });
+        setTempCategories(response.data);
+      })();
+    }
+
     setFormValues({
       name: game.name,
       publisher: game.publisher,
@@ -114,8 +177,21 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
       description: game.description,
       header_img: game.header_img,
       image: game.image,
+      categories: game.categories_list
+        .map(
+          (category) => tempCategories.find((cat) => cat.name === category)?.id,
+        )
+        .filter((id): id is number => id !== undefined),
     });
-  }, [game]);
+
+    if (game.categories_list.length > 0) {
+      setCategoryNames(
+        game.categories_list.filter(
+          (category): category is string => category !== undefined,
+        ),
+      );
+    }
+  }, [game, tempCategories, token]);
 
   return (
     <form action={formAction}>
@@ -191,6 +267,30 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
             />
             <ErrorMessage>{state.errors?.short_description?.[0]}</ErrorMessage>
           </InputGroup>
+          <InputGroup className="relative">
+            <Label htmlFor="categories-search">Categories</Label>
+            <TextInput
+              id="categories-search"
+              name="categories-search"
+              onChange={(e) => {
+                setCategoriesSearch(e.target.value);
+              }}
+              value={categoriesSearch}
+            />
+            {categoriesSearch ? (
+              <Categories categories={categories} onClick={selectCategory} />
+            ) : null}
+            <div className="mt-1 flex gap-2">
+              {categoryNames.map((category) => (
+                <span
+                  key={`category-${category.toString()}`}
+                  className="inline-block rounded-full bg-indigo-500 px-2 py-1 text-xs text-white"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
+          </InputGroup>
         </div>
         <InputGroup>
           <Label htmlFor="description">Description</Label>
@@ -260,6 +360,29 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
           </div>
         </div>
         <input
+          type="text"
+          name="id"
+          id="id"
+          value={game?.id}
+          className="hidden"
+        />
+        {formValues.categories?.map((category, i) => (
+          <input
+            key={`category-${category.toString()}-${i.toString()}`}
+            name="categories"
+            type="hidden"
+            value={category}
+          />
+        ))}
+        {formValues.new_categories?.map((category, i) => (
+          <input
+            key={`new-category-${category}-${i.toString()}`}
+            name="new_categories"
+            type="hidden"
+            value={category}
+          />
+        ))}
+        <input
           type="file"
           accept="image/*"
           id="header-img-local"
@@ -310,13 +433,6 @@ export function EditGameForm({ game }: UpdateGameFormProps): ReactElement {
             setToastOpen(true);
             setMessage('File is not an image');
           }}
-        />
-        <input
-          type="text"
-          name="id"
-          id="id"
-          value={game?.id}
-          className="hidden"
         />
         <TextInput
           id="header-img"
@@ -382,6 +498,52 @@ function SteamGame({
           <span className="block truncate font-semibold">{game.name}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+function Categories({
+  categories,
+  onClick,
+}: {
+  categories: CategoriesResponse['data'];
+  onClick: ({ id, name }: { id?: number; name?: string }) => void;
+}): ReactElement {
+  return (
+    <div className="absolute left-0 top-full z-20 mt-2 max-h-96 w-full overflow-y-auto rounded-lg bg-zinc-800">
+      {categories.map((category) => (
+        <div
+          key={`category-${category.id.toString()}`}
+          role="menuitem"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onClick({ id: category.id, name: category.name });
+            }
+          }}
+          onClick={() => {
+            onClick({ id: category.id, name: category.name });
+          }}
+          className="cursor-pointer items-center gap-x-4 p-4 hover:bg-zinc-600"
+        >
+          <span className="block truncate font-semibold">{category.name}</span>
+        </div>
+      ))}
+      <div
+        role="menuitem"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            onClick({});
+          }
+        }}
+        onClick={() => {
+          onClick({});
+        }}
+        className="cursor-pointer items-center gap-x-4 p-4 hover:bg-zinc-600"
+      >
+        <span className="block truncate font-semibold">Add Category</span>
+      </div>
     </div>
   );
 }

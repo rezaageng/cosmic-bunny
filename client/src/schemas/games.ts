@@ -12,6 +12,7 @@ export const GamesResponseSchema = z.object({
       short_description: z.string(),
       publisher: z.string(),
       price: z.number(),
+      categories_list: z.array(z.string().optional()),
       created_at: z.string(),
       updated_at: z.string(),
     }),
@@ -32,6 +33,7 @@ export const GameResponseSchema = z.object({
       short_description: z.string(),
       publisher: z.string(),
       price: z.number(),
+      categories_list: z.array(z.string().optional()),
       created_at: z.string(),
       updated_at: z.string(),
     })
@@ -64,6 +66,8 @@ export const GameBodySchema = z.object({
   image_local: z.instanceof(File).optional(),
   header_img: z.string().min(1, { message: 'Header image is required' }),
   header_img_local: z.instanceof(File).optional(),
+  categories: z.array(z.number()).optional(),
+  new_categories: z.array(z.string()).optional(),
 });
 
 export type GameBody = z.infer<typeof GameBodySchema>;
