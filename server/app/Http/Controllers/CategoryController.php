@@ -15,7 +15,7 @@ class CategoryController extends Controller
         $query = Category::with('games');
 
         if ($request->has('search')) {
-            $query->where('name', 'like', "%" . $request->search . "%");
+            $query->where('name', 'ilike', "%" . $request->search . "%");
         }
 
         $categories = $query->get();
