@@ -18,6 +18,7 @@ import {
   type SteamGamesResponse,
   SteamGamesResponseSchema,
 } from '@/schemas/steam-games';
+import { UsersResponse, UsersResponseSchema } from '@/schemas/users';
 import {
   type WishlistResponse,
   WishlistResponseSchema,
@@ -341,6 +342,33 @@ export const getCategories = async ({
 
   if (!data.success) {
     throw new Error('Failed to parse categories response');
+  }
+
+  return data.data;
+};
+
+export const getUsers = async ({
+  token,
+}: {
+  token: string;
+}): Promise<UsersResponse> => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch users');
+  }
+
+  const data = UsersResponseSchema.safeParse(await response.json());
+
+  if (!data.success) {
+    throw new Error('Failed to parse users response');
   }
 
   return data.data;
