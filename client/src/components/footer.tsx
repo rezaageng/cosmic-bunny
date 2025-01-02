@@ -1,6 +1,8 @@
-export function Footer() {
+import { type ReactElement } from 'react';
+
+export function Footer(): ReactElement {
   return (
-    <footer className="bg-gray-800 text-gray-300 py-4 mt-auto">
+    <footer className="mt-auto bg-gray-800 py-4 text-gray-300">
       <div className="container mx-auto text-center">
         <p className="text-xs sm:text-sm">
           &copy; {new Date().getFullYear()} Cosmic Bunny. All Rights Reserved.

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { Plus, User } from 'lucide-react';
 import { Button } from '@/components/button';
@@ -42,17 +42,10 @@ export default function UserDashboard(): ReactElement {
                 </div>
                 <div className="flex items-center gap-4">
                   {/* Tombol Update */}
-                  <Button
-                    className="w-auto px-4 py-2 text-sm"
-                  >
-                    Update
-                  </Button>
+                  <Button className="w-auto px-4 py-2 text-sm">Update</Button>
 
                   {/* Tombol Delete */}
-                  <Button
-                    variant="danger"
-                    className="w-auto text-sm"
-                  >
+                  <Button variant="danger" className="w-auto text-sm">
                     Delete
                   </Button>
                 </div>
