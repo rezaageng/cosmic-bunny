@@ -169,8 +169,11 @@ const UserDropdown = forwardRef<HTMLUListElement>(
         className="absolute right-0 top-full z-10 mt-2 w-40 rounded-lg border border-gray-800 bg-gray-950 text-left text-sm"
       >
         <li>
-          <Link href="/" className="block w-full px-2 py-1 hover:bg-gray-800">
-            Account Setting
+          <Link
+            href="/user"
+            className="block w-full px-2 py-1 hover:bg-gray-800"
+          >
+            Profile
           </Link>
         </li>
         <li>
