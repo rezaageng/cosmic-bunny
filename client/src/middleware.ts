@@ -40,7 +40,8 @@ export const middleware = async (
     (url.startsWith('/wishlist') ||
       url.startsWith('/cart') ||
       url.startsWith('/library') ||
-      url.startsWith('/dashboard'))
+      url.startsWith('/dashboard') ||
+      url.startsWith('/user'))
   ) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
