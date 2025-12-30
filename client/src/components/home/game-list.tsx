@@ -12,6 +12,7 @@ import { useAnimate } from 'motion/react';
 import { useResponsive } from '@/hooks/use-responsive';
 import type { GamesResponse } from '@/schemas/games';
 import { GameCard } from '@/components/game-card';
+import { cn } from '@/lib/utils';
 
 interface GameListProps {
   title: string;
@@ -112,7 +113,9 @@ export function GameList({ title, games }: GameListProps): ReactElement {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-left text-2xl font-bold text-gray-100">{title}</h2>
-        <div className="space-x-2">
+        <div className={cn("space-x-2", {
+          hidden: games.length <= totalItem,   
+        })}>
           <button
             type="button"
             onClick={prevItem}

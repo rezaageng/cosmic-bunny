@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Library;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class LibraryController extends Controller
 {
@@ -12,9 +13,19 @@ class LibraryController extends Controller
         $user = $request->user();
 
         if ($user->role === 'user') {
-            $libraries = Library::where('user_id', $user->id)->get();
+            $version = Cache::get('libraries:user:' . $user->id . ':version', 1);
+            $key = 'libraries:user:' . $user->id . ':v' . $version;
+
+            $libraries = Cache::remember($key, 300, function () use ($user) {
+                return Library::with('game')->where('user_id', $user->id)->get();
+            });
         } else {
-            $libraries = Library::all();
+            $version = Cache::get('libraries:all:version', 1);
+            $key = 'libraries:all:v' . $version;
+
+            $libraries = Cache::remember($key, 300, function () {
+                return Library::with('game')->get();
+            });
         }
 
         $data = $libraries->map(function ($library) {
@@ -54,6 +65,9 @@ class LibraryController extends Controller
 
         $library = Library::create($request->all());
 
+        // Invalidate user's library cache
+        Cache::increment('libraries:user:' . $request->user_id . ':version');
+
         return response()->json([
             'message' => 'Library successfully created',
             'data' => $library,
@@ -64,6 +78,9 @@ class LibraryController extends Controller
     public function destroy(Library $library)
     {
         $library->delete();
+
+        // Invalidate cache for this user
+        Cache::increment('libraries:user:' . $library->user_id . ':version');
 
         return response()->json([
             'message' => 'Library Deleted'

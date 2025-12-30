@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Games;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GameController extends Controller
 {
@@ -16,11 +17,16 @@ class GameController extends Controller
             $query->where('name', 'ilike', "%" . $request->search . "%");
         }
 
-        \Log::info('Game search query: ' . $query->toSql(), ['bindings' => $query->getBindings()]);
+        $version = Cache::get('games:index:version', 1);
+        $key = 'games:index:v' . $version . ':' . md5($request->fullUrl());
+
+        $data = Cache::remember($key, 300, function () use ($query) {
+            return $query->get();
+        });
 
         return response()->json([
             'message' => 'List of games',
-            'data' => $query->get()
+            'data' => $data
         ]);
     }
 
@@ -55,6 +61,8 @@ class GameController extends Controller
 
         // Reload the model with categories
         $game->load('categories');
+        // Invalidate index cache by bumping version
+        Cache::increment('games:index:version');
 
         return response()->json([
             'message' => 'Game created successfully',
@@ -68,9 +76,16 @@ class GameController extends Controller
     {
         $game->load('categories:id,name'); // Memuat kategori dengan id dan nama saja
 
+        $version = Cache::get('games:show:version:' . $game->id, 1);
+        $key = 'games:show:' . $game->id . ':v' . $version;
+
+        $data = Cache::remember($key, 300, function () use ($game) {
+            return $game;
+        });
+
         return response()->json([
             'message' => 'Game details',
-            'data' => $game,
+            'data' => $data,
         ]);
     }
 
@@ -96,6 +111,10 @@ class GameController extends Controller
             $game->categories()->sync($request->categories);
         }
 
+        // Bump index version and show version for this game
+        Cache::increment('games:index:version');
+        Cache::increment('games:show:version:' . $game->id);
+
         return response()->json([
             'message' => 'Game updated successfully',
             'data' => $game->load('categories'),
@@ -107,6 +126,10 @@ class GameController extends Controller
     public function destroy(Games $game)
     {
         $game->delete();
+
+        // Invalidate caches
+        Cache::increment('games:index:version');
+        Cache::increment('games:show:version:' . $game->id);
 
         return response()->json([
             'message' => 'Game deleted successfully',
